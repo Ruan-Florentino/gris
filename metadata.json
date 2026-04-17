@@ -1,0 +1,7 @@
+{
+  "name": "GRIS — Mineral Intelligence & GIS SaaS",
+  "description": "Enterprise-grade platform for mineral resource intelligence, geological analysis, and global energy monitoring. Real-time data integration from USGS, ANM, and global geological surveys for professional investors and geologists.",
+  "requestFramePermissions": [
+    "geolocation"
+  ]
+}
