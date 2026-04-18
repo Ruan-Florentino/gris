@@ -2,7 +2,9 @@
 
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Shield, ChevronRight, Terminal, UserPlus } from 'lucide-react';
+import { Shield, ChevronRight, UserPlus } from 'lucide-react';
+import Image from 'next/image';
+import GrisLogo from '@/components/GrisLogo';
 
 export default function CadastroPage() {
   const router = useRouter();
@@ -69,9 +71,15 @@ export default function CadastroPage() {
         
         <div className="p-8">
           <div className="flex flex-col items-center mb-8">
-            <Terminal className="w-12 h-12 text-[var(--gris-emerald)] mb-4" />
-            <h1 className="text-2xl font-bold tracking-widest text-[var(--gris-emerald)] uppercase">GRIS</h1>
-            <p className="text-[var(--gris-text-secondary)] text-xs font-mono mt-2 uppercase tracking-widest">Cadastro de Operador</p>
+            <div className="relative mb-4">
+              <GrisLogo 
+                size={56} 
+                className="relative z-10 animate-float drop-shadow-[0_0_8px_rgba(0,255,156,0.6)]"
+              />
+              <div className="absolute inset-0 bg-[var(--gris-emerald)] opacity-20 blur-2xl animate-pulse-glow" />
+            </div>
+            <h1 className="text-2xl font-black tracking-[0.4em] text-white font-oxanium uppercase">GRIS</h1>
+            <p className="text-[var(--gris-emerald)] text-[10px] font-mono mt-2 uppercase tracking-[0.3em] opacity-60">Solicitação de Credenciamento Orbital</p>
           </div>
 
           <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-6">

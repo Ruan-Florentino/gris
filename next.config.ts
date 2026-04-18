@@ -8,8 +8,8 @@ const nextConfig: NextConfig = {
   experimental: {
     optimizePackageImports: ['lucide-react', 'motion'],
   },
-  eslint: {
-    ignoreDuringBuilds: true,
+  turbopack: {
+    root: '/app/applet'
   },
   typescript: {
     ignoreBuildErrors: false,
@@ -26,7 +26,7 @@ const nextConfig: NextConfig = {
     ],
   },
   output: 'standalone',
-  transpilePackages: ['motion', 'cesium'],
+  transpilePackages: ['motion'],
   webpack: (config, {dev, isServer}) => {
     if (!isServer) {
       config.externals = {

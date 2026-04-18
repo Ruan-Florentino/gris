@@ -4,7 +4,7 @@ import { NextResponse } from 'next/server'
 import { supabaseAdmin } from '@/lib/supabase'
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || 'sk_test_placeholder', {
-  apiVersion: '2025-02-24.acacia',
+  apiVersion: '2026-03-25.dahlia' as any,
 });
 
 const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;

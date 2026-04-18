@@ -24,44 +24,59 @@ export default memo(function WarRoom({ isOpen, onClose, data }: WarRoomProps) {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed top-[50px] md:top-[60px] right-0 bottom-0 w-full md:w-[340px] bg-[#050a0e] border-l border-[#ff3030] z-40 flex flex-col pointer-events-auto animate-[slideInRight_0.3s_ease-out]">
+    <div className="fixed top-[56px] right-0 bottom-0 w-full md:w-[380px] bg-[rgba(5,10,14,0.95)] backdrop-blur-2xl border-l border-[var(--gris-red)] z-40 flex flex-col pointer-events-auto shadow-[-20px_0_50px_rgba(239,68,68,0.15)] animate-[slideInRight_0.3s_ease-out]">
       
+      {/* HUD Corner Decorators */}
+      <div className="absolute top-0 left-0 w-4 h-4 border-t-2 border-l-2 border-[var(--gris-red)] opacity-50" />
+      <div className="absolute bottom-0 left-0 w-4 h-4 border-b-2 border-l-2 border-[var(--gris-red)] opacity-50" />
+      
+      {/* Background Grid */}
+      <div className="absolute inset-0 bg-[linear-gradient(rgba(239,68,68,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(239,68,68,0.03)_1px,transparent_1px)] bg-[size:20px_20px] pointer-events-none" />
+
       {/* Header */}
-      <div className="bg-[rgba(255,48,48,0.05)] px-[14px] py-[12px] border-b border-[rgba(255,48,48,0.2)] flex items-center justify-between">
-        <div className="flex items-center gap-2 text-[var(--gris-red)] font-mono font-bold text-[12px] uppercase tracking-widest">
-          <ShieldAlert className="w-4 h-4 animate-pulse" />
+      <div className="relative bg-[rgba(239,68,68,0.1)] px-4 py-3 border-b border-[rgba(239,68,68,0.3)] flex items-center justify-between z-10">
+        <div className="absolute top-0 left-0 w-full h-[1px] bg-[linear-gradient(90deg,var(--gris-red),transparent)]" />
+        <div className="flex items-center gap-3 text-[var(--gris-red)] font-oxanium font-bold text-[14px] uppercase tracking-[0.3em]">
+          <ShieldAlert className="w-5 h-5 animate-pulse" />
           SALA_DE_GUERRA
         </div>
-        <button onClick={onClose} className="md:hidden text-[var(--gris-text-secondary)] hover:text-white">
-          <X className="w-5 h-5" />
+        <button onClick={onClose} className="md:hidden p-1 rounded-full bg-[rgba(255,255,255,0.05)] text-[var(--gris-text-2)] hover:text-white transition-colors">
+          <X className="w-4 h-4" />
         </button>
-        <div className="hidden md:block text-[10px] text-[var(--gris-text-secondary)] font-mono">LINK_SEGURO</div>
+        <div className="hidden md:flex items-center gap-1.5">
+          <div className="w-1.5 h-1.5 bg-[var(--gris-red)] rounded-full animate-pulse blur-[1px]" />
+          <div className="text-[9px] text-[var(--gris-red)] font-mono tracking-wider">UPLINK ATIVO</div>
+        </div>
       </div>
 
-      <div className="flex-1 overflow-y-auto custom-scrollbar p-[14px] flex flex-col gap-6">
+      <div className="relative flex-1 overflow-y-auto custom-scrollbar p-5 flex flex-col gap-8 z-10">
         
         {/* THREAT LEVEL */}
         <div className="flex flex-col gap-2">
-          <div className="text-[10px] font-mono text-[var(--gris-text-secondary)] uppercase tracking-widest flex items-center justify-between">
-            <span>NÍVEL DE AMEAÇA GLOBAL</span>
-            <span className="text-[var(--gris-red)] font-bold">{Math.round(threatLevel)}%</span>
+          <div className="text-[10px] font-oxanium text-[var(--gris-text-2)] uppercase tracking-[0.2em] flex items-center justify-between">
+            <span className="flex items-center gap-2">
+              <span className="w-1 h-3 bg-[var(--gris-red)]" /> NÍVEL DE AMEAÇA GLOBAL
+            </span>
+            <span className="text-[var(--gris-red)] font-mono font-bold text-[14px] glow-red">{Math.round(threatLevel)}%</span>
           </div>
-          <div className="h-2 bg-[rgba(255,255,255,0.05)] rounded-full overflow-hidden border border-[rgba(255,48,48,0.2)]">
+          <div className="h-2.5 bg-[rgba(255,255,255,0.05)] rounded-sm overflow-hidden border border-[rgba(239,68,68,0.3)] p-[1px]">
             <div 
-              className="h-full bg-[var(--gris-red)] shadow-[0_0_10px_rgba(255,48,48,0.5)] transition-all duration-1000"
+              className="h-full bg-[var(--gris-red)] rounded-[1px] shadow-[0_0_10px_var(--gris-red)] transition-all duration-1000 relative overflow-hidden"
               style={{ width: `${threatLevel}%` }}
-            />
+            >
+              <div className="absolute inset-0 bg-[linear-gradient(90deg,transparent,rgba(255,255,255,0.5),transparent)] -translate-x-full animate-[slideRight_1.5s_infinite]" />
+            </div>
           </div>
         </div>
 
         {/* ACTIVE ALERTS */}
-        <div className="flex flex-col gap-3">
-          <div className="text-[10px] font-mono text-[var(--gris-text-secondary)] uppercase tracking-widest flex items-center gap-2">
-            <AlertTriangle className="w-3 h-3 text-[var(--gris-amber)]" />
-            ALERTAS ATIVOS
+        <div className="flex flex-col gap-4">
+          <div className="text-[11px] font-oxanium text-[var(--gris-emerald)] uppercase tracking-[0.2em] flex items-center gap-2 border-b border-[var(--gris-border-subtle)] pb-2">
+            <AlertTriangle className="w-3.5 h-3.5 text-[var(--gris-amber)]" />
+            VETORES DE ALERTA ATIVOS
           </div>
           
-          <div className="flex flex-col gap-2">
+          <div className="flex flex-col gap-3">
             <AlertCard 
               severity="CRÍTICO" 
               location="MAR DO SUL DA CHINA" 
@@ -77,32 +92,33 @@ export default memo(function WarRoom({ isOpen, onClose, data }: WarRoomProps) {
             <AlertCard 
               severity="ALTO" 
               location="CINTURÃO DO CONGO" 
-              event="RUPTURA NA CADEIA DE SUPRIMENTOS" 
+              event="RUPTURA DE CADEIA MAGNÉTICA" 
               time="T-04:11:30" 
             />
           </div>
         </div>
 
         {/* RAPID RESPONSE */}
-        <div className="flex flex-col gap-3 mt-auto">
-          <div className="text-[10px] font-mono text-[var(--gris-text-secondary)] uppercase tracking-widest flex items-center gap-2">
-            <Activity className="w-3 h-3 text-[var(--gris-emerald)]" />
-            RESPOSTA RÁPIDA
+        <div className="flex flex-col gap-4 mt-auto">
+          <div className="text-[11px] font-oxanium text-[var(--gris-emerald)] uppercase tracking-[0.2em] flex items-center gap-2 border-b border-[var(--gris-border-subtle)] pb-2">
+            <Activity className="w-3.5 h-3.5" />
+            PROTOCOLO DE RESPOSTA
           </div>
           
-          <div className="grid grid-cols-1 gap-2">
-            <button className="w-full py-3 bg-[rgba(255,48,48,0.1)] border border-[var(--gris-red)] text-[var(--gris-red)] font-mono text-[11px] font-bold uppercase tracking-widest rounded-[4px] hover:bg-[rgba(255,48,48,0.2)] hover:shadow-[0_0_15px_rgba(255,48,48,0.3)] transition-all flex items-center justify-center gap-2">
+          <div className="grid grid-cols-1 gap-3">
+            <button className="w-full py-4 bg-[rgba(239,68,68,0.1)] border border-[var(--gris-red)] text-[var(--gris-red)] font-oxanium text-[12px] font-bold uppercase tracking-[0.2em] hover:bg-[var(--gris-red)] hover:text-black hover:shadow-[0_0_20px_rgba(239,68,68,0.4)] transition-all flex items-center justify-center gap-2 group relative overflow-hidden">
+              <div className="absolute inset-0 bg-[linear-gradient(90deg,transparent,rgba(255,255,255,0.2),transparent)] -translate-x-full group-hover:animate-[slideRight_1s_infinite]" />
               <Crosshair className="w-4 h-4" />
-              IMPLANTAR ATIVOS
+              IMPLANTAR CONTRAMEDIDAS
             </button>
-            <div className="grid grid-cols-2 gap-2">
-              <button className="w-full py-2 bg-[rgba(255,255,255,0.03)] border border-[rgba(255,255,255,0.1)] text-[var(--gris-text-primary)] font-mono text-[10px] uppercase tracking-widest rounded-[4px] hover:bg-[rgba(255,255,255,0.08)] hover:border-[rgba(255,255,255,0.3)] transition-all flex items-center justify-center gap-2">
-                <Radio className="w-3 h-3" />
+            <div className="grid grid-cols-2 gap-3">
+              <button className="w-full py-3 bg-[rgba(255,255,255,0.03)] border border-[rgba(255,255,255,0.1)] text-white font-oxanium text-[10px] font-bold uppercase tracking-[0.15em] hover:bg-[rgba(255,255,255,0.08)] hover:border-[rgba(255,255,255,0.3)] transition-all flex items-center justify-center gap-2">
+                <Radio className="w-3.5 h-3.5 text-[var(--gris-sky)]" />
                 MONITORAR
               </button>
-              <button className="w-full py-2 bg-[rgba(255,255,255,0.03)] border border-[rgba(255,255,255,0.1)] text-[var(--gris-text-primary)] font-mono text-[10px] uppercase tracking-widest rounded-[4px] hover:bg-[rgba(255,255,255,0.08)] hover:border-[rgba(255,255,255,0.3)] transition-all flex items-center justify-center gap-2">
-                <Zap className="w-3 h-3" />
-                NEUTRALIZAR
+              <button className="w-full py-3 bg-[rgba(255,255,255,0.03)] border border-[rgba(255,255,255,0.1)] text-white font-oxanium text-[10px] font-bold uppercase tracking-[0.15em] hover:bg-[rgba(255,255,255,0.08)] hover:border-[rgba(255,255,255,0.3)] transition-all flex items-center justify-center gap-2">
+                <Zap className="w-3.5 h-3.5 text-[var(--gris-amber)]" />
+                INTERCEPTAR
               </button>
             </div>
           </div>
@@ -116,26 +132,33 @@ export default memo(function WarRoom({ isOpen, onClose, data }: WarRoomProps) {
 function AlertCard({ severity, location, event, time }: { severity: string, location: string, event: string, time: string }) {
   const isCritical = severity === 'CRÍTICO';
   return (
-    <div className={`p-3 rounded-[4px] border bg-[rgba(255,255,255,0.02)] transition-colors cursor-pointer hover:bg-[rgba(255,255,255,0.04)] ${
-      isCritical ? 'border-[rgba(255,48,48,0.3)]' : 'border-[rgba(255,184,0,0.3)]'
+    <div className={`p-4 border bg-[rgba(255,255,255,0.02)] transition-colors cursor-pointer hover:bg-[rgba(255,255,255,0.05)] relative overflow-hidden group ${
+      isCritical ? 'border-[rgba(239,68,68,0.3)]' : 'border-[rgba(245,158,11,0.3)]'
     }`}>
-      <div className="flex items-center justify-between mb-2">
-        <span className={`text-[8px] font-bold px-1.5 py-0.5 rounded-sm tracking-widest ${
+      {/* Colored Left Edge */}
+      <div className={`absolute top-0 bottom-0 left-0 w-1 ${isCritical ? 'bg-[var(--gris-red)]' : 'bg-[var(--gris-amber)]'}`} />
+      
+      {/* Background Glitch on Hover */}
+      <div className="absolute inset-0 opacity-0 group-hover:opacity-10 bg-[linear-gradient(transparent_50%,rgba(255,255,255,1)_50%)] bg-[length:100%_4px] pointer-events-none transition-opacity" />
+
+      <div className="flex items-center justify-between mb-3 pl-2">
+        <span className={`text-[9px] font-oxanium font-bold px-2 py-0.5 tracking-[0.1em] uppercase ${
           isCritical ? 'bg-[var(--gris-red)] text-white' : 'bg-[var(--gris-amber)] text-black'
         }`}>
           {severity}
         </span>
-        <div className="flex items-center gap-1 text-[8px] font-mono text-[var(--gris-text-secondary)]">
-          <Clock className="w-2.5 h-2.5" />
+        <div className="flex items-center gap-1.5 text-[10px] font-mono text-[var(--gris-text-2)] bg-[rgba(0,0,0,0.5)] px-2 py-0.5 rounded-sm">
+          <Clock className="w-3 h-3" />
           {time}
         </div>
       </div>
-      <div className="font-mono text-[11px] text-[var(--gris-text-primary)] uppercase font-bold mb-1">
+      <div className="font-inter text-[13px] text-white uppercase font-bold mb-1.5 pl-2 tracking-wide">
         {event}
       </div>
-      <div className="font-mono text-[9px] text-[var(--gris-text-secondary)] uppercase tracking-widest">
-        LOC: {location}
+      <div className="font-mono text-[10px] text-[var(--gris-text-2)] uppercase tracking-widest pl-2 flex items-center gap-2">
+        <span className="w-1.5 h-1.5 rounded-full bg-white/20" /> LOC: {location}
       </div>
     </div>
   );
 }
+

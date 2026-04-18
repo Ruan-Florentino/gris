@@ -1,56 +1,50 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Check, Terminal, ShieldAlert, Loader2 } from 'lucide-react';
+import { Check, ShieldAlert, Loader2, ArrowRight } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 
 const plans = {
   FREE: {
     name: "OPERADOR",
-    price: "R$ 0/mês",
-    description: "Para exploração inicial",
+    price: "$ 0/mês",
+    description: "Para exploração inicial e reconhecimento",
     features: [
-      "Acesso ao globo 3D com dados públicos",
-      "50 recursos minerais no mapa",
-      "Dados sísmicos USGS em tempo real",
-      "10 consultas ao AI Analyst por dia",
-      "Exportação em PNG",
+      "Acesso ao globo 3D",
+      "50 recursos no mapa",
+      "Eventos sísmicos (delay 24h)",
+      "10 varreduras IA/dia",
     ],
     cta: "INICIAR MISSÃO",
     highlight: false,
     planId: "FREE"
   },
   PRO: {
-    name: "ANALISTA",
-    price: "R$ 297/mês",
-    description: "Para geólogos e engenheiros ativos",
+    name: "PRO EDITION",
+    price: "$ 12k/mês",
+    description: "Para tomadores de decisão governamentais e mega-corporações",
     features: [
-      "Todos os 500+ recursos minerais",
-      "Dados ANM/IBRAM integrados",
-      "AI Analyst ilimitado com contexto geológico",
-      "Relatórios PDF profissionais",
-      "Filtros avançados por litologia e época",
-      "Exportação shapefile (.shp) e GeoJSON",
-      "Alertas de novos depósitos por região",
-      "Suporte prioritário",
+      "Integração de +500 recursos globais",
+      "Telemetria em Tempo Real",
+      "Analista IA sem limites (Contexto Tático)",
+      "Exportação PDF C-Level",
+      "Acesso a depósitos 'Black Site'",
     ],
-    cta: "ATIVAR PROTOCOLO PRO",
+    cta: "ASSINAR AGORA",
     highlight: true,
     planId: "PRO"
   },
   ENTERPRISE: {
     name: "COMANDO",
-    price: "Consultar",
-    description: "Para empresas de mineração e consultorias",
+    price: "Custom",
+    description: "Controle absoluto infraestrutural",
     features: [
       "Tudo do PRO",
-      "Multi-usuários (até 20 assentos)",
-      "API própria com sua chave",
-      "White-label opcional",
-      "Integração com software próprio",
-      "Dados proprietários da sua empresa no mapa",
-      "SLA 99.9% e suporte dedicado",
+      "Multi-usuários (até 50)",
+      "API Direct-Link",
+      "Integração White-Label",
+      "Dados privados da corporação inseridos no mapa no-code",
     ],
     cta: "SOLICITAR BRIEFING",
     highlight: false,
@@ -60,12 +54,13 @@ const plans = {
 
 export default function PricingPage() {
   const router = useRouter();
-  const { data: session } = useSession();
+  const sessionContext = useSession();
+  const session = sessionContext?.data;
   const [loadingPlan, setLoadingPlan] = useState<string | null>(null);
 
   const handleAction = async (planId: string) => {
-    if (!session) {
-      router.push('/cadastro');
+    if (!session && planId !== 'FREE') { // Allowing Free to just navigate
+      router.push('/login');
       return;
     }
 
@@ -101,45 +96,62 @@ export default function PricingPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[var(--gris-void)] p-4 md:p-8 relative overflow-hidden">
-      {/* Background Grid Accent */}
-      <div className="absolute inset-0 bg-[linear-gradient(rgba(0,255,156,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(0,255,156,0.03)_1px,transparent_1px)] bg-[size:30px_30px] opacity-30 pointer-events-none" />
-      
-      {/* Scanline effect */}
-      <div className="absolute inset-0 bg-[linear-gradient(transparent_50%,rgba(0,255,156,0.02)_50%)] bg-[length:100%_4px] pointer-events-none" />
+    <div className="min-h-screen bg-[var(--gris-void)] p-4 md:p-8 relative overflow-hidden flex flex-col items-center justify-center">
+      {/* Background Ambience */}
+      <div className="absolute inset-x-0 top-0 h-[50vh] bg-gradient-to-b from-[rgba(0,255,156,0.05)] to-transparent pointer-events-none" />
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-[var(--gris-primary)] opacity-[0.03] blur-[120px] rounded-full pointer-events-none" />
 
-      <div className="relative z-10 max-w-6xl mx-auto">
-        <div className="flex flex-col items-center mb-12 text-center">
-          <Terminal className="w-16 h-16 text-[var(--gris-emerald)] mb-4" />
-          <h1 className="text-3xl md:text-5xl font-bold tracking-widest text-[var(--gris-emerald)] uppercase mb-4">NÍVEIS DE ACESSO</h1>
-          <p className="text-[var(--gris-text-secondary)] text-sm md:text-base font-mono uppercase tracking-widest max-w-2xl">
-            Selecione o nível de autorização apropriado para suas operações de inteligência mineral.
+      <div className="relative z-10 w-full max-w-6xl mx-auto">
+        <div className="flex flex-col items-center mb-16 text-center">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-[var(--gris-border)] bg-[rgba(255,255,255,0.03)] mb-6">
+            <div className="w-1.5 h-1.5 rounded-full bg-[var(--gris-primary)] animate-pulse" />
+            <span className="font-oxanium text-[10px] text-[var(--gris-text-2)] uppercase tracking-widest">Acesso Restrito</span>
+          </div>
+          <h1 className="text-4xl md:text-6xl font-inter font-black text-[var(--gris-text-1)] tracking-tight mb-4">
+            Níveis de Autorização
+          </h1>
+          <p className="text-[var(--gris-text-2)] text-base md:text-lg font-inter max-w-2xl px-4">
+            Escolha sua matriz de acesso. Sistemas avançados requerem credenciamento superior de operações.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8 px-4 md:px-0 items-center">
           {Object.entries(plans).map(([key, plan]) => (
             <div 
               key={key} 
-              className={`panel flex flex-col ${plan.highlight ? 'border-[var(--gris-emerald)] shadow-[0_0_30px_rgba(0,255,156,0.15)] scale-105 z-10' : 'border-[rgba(0,255,156,0.1)]'}`}
+              className={`glass-panel rounded-3xl flex flex-col relative overflow-hidden transition-all duration-500 hover:-translate-y-2 ${
+                plan.highlight 
+                  ? 'border-[var(--gris-primary)] shadow-[0_20px_60px_rgba(0,255,156,0.15)] md:scale-105 z-10' 
+                  : 'border-[rgba(255,255,255,0.08)] hover:border-[rgba(255,255,255,0.2)]'
+              }`}
             >
               {plan.highlight && (
-                <div className="bg-[var(--gris-emerald)] text-[var(--gris-void)] text-center py-1 text-[10px] font-bold tracking-widest uppercase">
-                  RECOMENDADO PARA OPERAÇÕES TÁTICAS
-                </div>
+                <div className="absolute top-0 inset-x-0 h-1 bg-[var(--gris-primary)] shadow-[0_0_15px_var(--gris-primary)]" />
               )}
-              <div className="p-8 flex-1 flex flex-col">
-                <h2 className="text-2xl font-bold tracking-widest text-[var(--gris-text-primary)] uppercase mb-2">{plan.name}</h2>
-                <div className="text-3xl font-black text-[var(--gris-emerald)] mb-2">{plan.price}</div>
-                <p className="text-[var(--gris-text-secondary)] text-xs font-mono uppercase tracking-widest mb-8 h-8">
+              
+              <div className="p-8 pb-6 border-b border-[rgba(255,255,255,0.05)]">
+                {plan.highlight && (
+                  <div className="flex items-center gap-2 mb-4">
+                    <span className="font-oxanium text-[10px] text-[var(--gris-primary)] font-bold tracking-[0.2em] uppercase">✦ Autorização Recomendada</span>
+                  </div>
+                )}
+                <h2 className="text-2xl font-inter font-black tracking-tight text-[var(--gris-text-1)] mb-2">{plan.name}</h2>
+                <p className="text-[var(--gris-text-2)] text-sm font-inter leading-relaxed min-h-[40px]">
                   {plan.description}
                 </p>
+                <div className="mt-6 flex items-baseline gap-1">
+                  <span className="text-4xl font-inter font-black text-[var(--gris-text-1)]">{plan.price}</span>
+                </div>
+              </div>
 
+              <div className="p-8 pt-6 flex-1 flex flex-col bg-[rgba(0,0,0,0.2)]">
                 <div className="flex-1 space-y-4 mb-8">
                   {plan.features.map((feature, i) => (
                     <div key={i} className="flex items-start gap-3">
-                      <Check className="w-4 h-4 text-[var(--gris-emerald)] shrink-0 mt-0.5" />
-                      <span className="text-sm text-[var(--gris-text-primary)] font-mono">{feature}</span>
+                      <div className="mt-1 shrink-0 w-4 h-4 rounded-full bg-[rgba(0,255,156,0.1)] flex items-center justify-center">
+                        <Check className="w-2.5 h-2.5 text-[var(--gris-primary)]" />
+                      </div>
+                      <span className="text-sm text-[var(--gris-text-2)] font-inter leading-snug">{feature}</span>
                     </div>
                   ))}
                 </div>
@@ -147,25 +159,31 @@ export default function PricingPage() {
                 <button 
                   onClick={() => handleAction(plan.planId)}
                   disabled={loadingPlan === plan.planId}
-                  className={`w-full py-4 flex items-center justify-center gap-2 font-bold tracking-widest text-sm uppercase transition-all ${
+                  className={`w-full py-4 px-6 rounded-xl flex items-center justify-between font-oxanium font-bold tracking-[2px] text-xs uppercase transition-all group overflow-hidden relative ${
                     plan.highlight 
-                      ? 'bg-[var(--gris-emerald)] text-[var(--gris-void)] hover:bg-[var(--gris-emerald)]/80 shadow-[0_0_15px_rgba(0,255,156,0.3)]' 
-                      : 'btn-tactical'
+                      ? 'bg-[var(--gris-primary)] text-black hover:shadow-[0_0_20px_var(--gris-primary)]' 
+                      : 'bg-[rgba(255,255,255,0.05)] text-[var(--gris-text-1)] hover:bg-[rgba(255,255,255,0.1)]'
                   } disabled:opacity-50 disabled:cursor-not-allowed`}
                 >
-                  {loadingPlan === plan.planId ? <Loader2 className="w-4 h-4 animate-spin" /> : null}
-                  {plan.cta}
+                  {plan.highlight && (
+                    <div className="absolute inset-0 bg-[linear-gradient(90deg,transparent,rgba(255,255,255,0.4),transparent)] -translate-x-full group-hover:animate-[slideRight_1.5s_ease-in-out_infinite]" />
+                  )}
+                  <span className="relative z-10 flex items-center gap-2">
+                    {loadingPlan === plan.planId ? <Loader2 className="w-4 h-4 animate-spin" /> : null}
+                    {plan.cta}
+                  </span>
+                  <ArrowRight className="w-4 h-4 relative z-10 group-hover:translate-x-1 transition-transform" />
                 </button>
               </div>
             </div>
           ))}
         </div>
 
-        <div className="mt-16 text-center flex flex-col items-center justify-center gap-4">
-          <ShieldAlert className="w-8 h-8 text-[var(--gris-text-secondary)]" />
-          <p className="text-[10px] text-[var(--gris-text-secondary)] font-mono uppercase tracking-widest max-w-xl">
-            Todos os dados são criptografados e armazenados em servidores seguros. O acesso a dados confidenciais está sujeito a verificação de identidade e conformidade regulatória.
-          </p>
+        <div className="mt-20 flex justify-center">
+          <div className="inline-flex items-center gap-3 px-6 py-3 rounded-2xl glass-panel border border-[rgba(255,255,255,0.05)] opacity-60">
+            <ShieldAlert className="w-5 h-5 text-[var(--gris-text-3)]" />
+            <span className="text-xs font-inter text-[var(--gris-text-3)]">Criptografia AES-256 GCM. Sujeito à verificação de conformidade ECCN.</span>
+          </div>
         </div>
       </div>
     </div>

@@ -53,7 +53,7 @@ export async function exportShapefile(resources: ResourceData[]) {
     }))
   };
 
-  const options = {
+  const options: any = {
     folder: 'gris_shapefile',
     types: {
       point: 'points'

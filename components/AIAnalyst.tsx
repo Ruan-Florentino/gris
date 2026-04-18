@@ -2,7 +2,7 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Bot, Send, X, Sparkles, Activity, ShieldAlert, Database, Terminal, ChevronRight, BrainCircuit } from 'lucide-react';
+import { Bot, Send, X, Sparkles, Activity, ShieldAlert, Database, Terminal, ChevronRight, BrainCircuit, Cpu } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import { ResourceData, RiskZone, ExportRoute } from '@/lib/data';
 
@@ -28,7 +28,7 @@ export default function AIAnalyst({ isOpen, onClose, context }: AIAnalystProps) 
   const [messages, setMessages] = useState<Message[]>([
     {
       role: 'assistant',
-      content: "Analista de Inteligência Estratégica online. Indexei todos os dados globais de recursos, zonas de risco e corredores de exportação. Como posso ajudar na sua avaliação situacional?",
+      content: "NÚCLEO NEURAL ATIVO. Monitoramento global sincronizado. Aguardando diretrizes estratégicas.",
       timestamp: new Date()
     }
   ]);
@@ -77,17 +77,12 @@ export default function AIAnalyst({ isOpen, onClose, context }: AIAnalystProps) 
       console.error("AI Analyst Error:", error);
       setMessages(prev => [...prev, {
         role: 'assistant',
-        content: "ERRO CRÍTICO: Link neural interrompido. Verifique a configuração da API ou o status da rede.",
+        content: "ERRO CRÍTICO: Link neural de satélite interrompido. Reestabelecendo...",
         timestamp: new Date()
       }]);
     } finally {
       setIsLoading(false);
     }
-  };
-
-  const generateBriefing = async () => {
-    setInput("Forneça um Briefing de Inteligência Estratégica completo baseado nos dados globais atuais.");
-    setTimeout(() => handleSend(), 0);
   };
 
   return (
@@ -97,80 +92,79 @@ export default function AIAnalyst({ isOpen, onClose, context }: AIAnalystProps) 
           initial={{ opacity: 0, x: 30, scale: 0.95 }}
           animate={{ opacity: 1, x: 0, scale: 1 }}
           exit={{ opacity: 0, x: 30, scale: 0.95 }}
-          className="fixed inset-0 md:inset-auto md:top-24 md:right-6 md:bottom-24 w-full md:w-[420px] z-[60] flex flex-col pointer-events-auto group"
+          className="fixed inset-0 md:inset-auto md:top-[60px] md:right-[316px] md:bottom-24 w-full md:w-[460px] z-[70] flex flex-col pointer-events-auto"
         >
-          <div className="flex-1 bg-[var(--gris-surface)]/98 backdrop-blur-3xl border-t md:border border-[var(--gris-emerald)]/40 md:rounded-sm flex flex-col shadow-[0_-20px_60px_rgba(0,255,156,0.1)] md:shadow-[0_0_60px_rgba(0,255,156,0.2)] overflow-hidden font-mono relative mt-16 md:mt-0">
+          <div className="flex-1 bg-[rgba(5,10,14,0.95)] backdrop-blur-2xl border border-[var(--gris-purple)] md:rounded-[4px] flex flex-col shadow-[-20px_0_50px_rgba(123,47,255,0.1)] overflow-hidden relative">
             
-            {/* Hardware Accents */}
-            <div className="absolute top-0 left-0 w-8 h-8 border-t-2 border-l-2 border-[var(--gris-emerald)]/30 hidden md:block" />
-            <div className="absolute bottom-0 right-0 w-8 h-8 border-b-2 border-r-2 border-[var(--gris-emerald)]/30 hidden md:block" />
+            {/* Ambient Purple Glow */}
+            <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-[var(--gris-purple)] opacity-10 blur-[100px] pointer-events-none rounded-full" />
+            
+            {/* HUD Corner Decorators */}
+            <div className={`absolute top-0 left-0 w-4 h-4 border-t-2 border-l-2 border-[var(--gris-purple)] transition-opacity duration-1000 ${isLoading ? 'opacity-100 animate-pulse' : 'opacity-50'}`} />
+            <div className={`absolute bottom-0 right-0 w-4 h-4 border-b-2 border-r-2 border-[var(--gris-purple)] transition-opacity duration-1000 ${isLoading ? 'opacity-100 animate-pulse' : 'opacity-50'}`} />
+
+            {/* Outline Gradient matching AI role Focus */}
+            <div className={`absolute inset-0 border-[0.5px] rounded-[4px] pointer-events-none transition-colors duration-1000 ${isLoading ? 'border-[rgba(123,47,255,0.4)]' : 'border-transparent'}`} />
 
             {/* Header */}
-            <div className="p-2 md:p-6 border-b border-[var(--gris-emerald)]/30 bg-[var(--gris-emerald)]/5 flex items-center justify-between relative overflow-hidden">
-              <div className="absolute inset-0 bg-[linear-gradient(45deg,transparent_25%,rgba(0,255,156,0.05)_50%,transparent_75%)] bg-[length:250%_250%] animate-[shimmer_5s_infinite]" />
-              <div className="flex items-center gap-1.5 md:gap-4 relative z-10">
-                <div className="relative">
-                  <div className="p-1 md:p-2 bg-[var(--gris-emerald)]/10 border border-[var(--gris-emerald)]/30 rounded-sm">
-                    <BrainCircuit className="w-3 h-3 md:w-6 md:h-6 text-[var(--gris-emerald)]" />
-                  </div>
-                  <div className="absolute -top-0.5 -right-0.5 w-1.5 h-1.5 md:w-3 md:h-3 bg-[var(--gris-emerald)] rounded-full animate-ping" />
+            <div className="p-4 border-b border-[rgba(123,47,255,0.2)] bg-[rgba(123,47,255,0.05)] flex items-center justify-between relative z-10">
+              <div className="absolute bottom-0 left-0 w-full h-[1px] bg-[linear-gradient(90deg,var(--gris-purple),transparent)]" />
+              <div className="flex items-center gap-4">
+                <div className="relative w-10 h-10 border border-[var(--gris-purple)] bg-[rgba(123,47,255,0.1)] flex items-center justify-center">
+                  <Cpu className="w-5 h-5 text-[var(--gris-purple)] glow-purple" />
+                  <div className="absolute -top-1 -right-1 w-2 h-2 rounded-full bg-[var(--gris-emerald)] shadow-[0_0_8px_var(--gris-emerald)] animate-pulse" />
                 </div>
                 <div>
-                  <h3 className="text-[10px] md:text-sm font-black text-[var(--gris-text-primary)] tracking-[0.05em] md:tracking-[0.4em] uppercase leading-none mb-0.5 md:mb-1">INTELIGÊNCIA_GRIS</h3>
-                  <div className="text-[7px] md:text-[9px] text-[var(--gris-emerald)] tracking-[0.1em] md:tracking-[0.2em] font-bold uppercase opacity-70">NÚCLEO_ANALISTA_NEURAL // ATIVO</div>
+                  <h3 className="text-[14px] font-oxanium font-bold text-white tracking-[0.2em] uppercase flex items-center gap-2">
+                    GRIS-AI
+                    <span className="px-1.5 py-0.5 bg-[var(--gris-purple)] text-black text-[9px] tracking-widest font-bold">AURA-9</span>
+                  </h3>
+                  <div className="text-[10px] text-[var(--gris-text-2)] font-mono uppercase tracking-widest mt-1">
+                    {'> '} NÚCLEO NEURAL ATIVO
+                  </div>
                 </div>
               </div>
               <button 
                 onClick={onClose} 
-                className="p-1 md:p-2 hover:bg-[var(--gris-red)]/20 rounded-sm transition-all group/close border border-transparent hover:border-[var(--gris-red)]/30"
+                className="w-8 h-8 rounded-full flex items-center justify-center text-[var(--gris-text-2)] hover:text-white transition-all"
               >
-                <X className="w-4 h-4 md:w-5 md:h-5 text-[var(--gris-emerald)]/50 group-hover/close:text-[var(--gris-red)] group-hover/close:rotate-90 transition-transform" />
+                <X className="w-4 h-4" />
               </button>
             </div>
 
             {/* Messages Area */}
             <div className="relative flex-1 overflow-hidden">
-              {/* Scanline Overlay */}
-              <div className="absolute inset-0 pointer-events-none z-10 overflow-hidden">
-                <div className="absolute inset-0 bg-[linear-gradient(transparent_50%,rgba(0,255,156,0.02)_50%)] bg-[length:100%_4px]" />
-                <div className="w-full h-8 md:h-12 bg-gradient-to-b from-transparent via-[var(--gris-emerald)]/10 to-transparent animate-[scan_4s_linear_infinite]" />
-              </div>
-              
               <div 
                 ref={scrollRef}
-                className="absolute inset-0 overflow-y-auto p-3 md:p-6 space-y-4 md:space-y-6 custom-scrollbar bg-[linear-gradient(rgba(0,255,156,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(0,255,156,0.02)_1px,transparent_1px)] bg-[size:30px_30px]"
+                className="absolute inset-0 overflow-y-auto p-4 md:p-6 space-y-6 custom-scrollbar z-10"
               >
                 {messages.map((msg, i) => (
-                  <div key={i} className={`flex flex-col ${msg.role === 'user' ? 'items-end' : 'items-start'} relative z-20`}>
-                    <div className={`max-w-[95%] p-3 md:p-4 rounded-sm text-[10px] md:text-[11px] leading-relaxed tracking-wide shadow-lg ${
+                  <div key={i} className={`flex flex-col ${msg.role === 'user' ? 'items-end' : 'items-start'} relative w-full`}>
+                    <div className={`flex items-center gap-2 mb-1.5 text-[9px] font-oxanium font-bold uppercase tracking-[0.15em] ${msg.role === 'user' ? 'text-[var(--gris-text-2)] flex-row-reverse' : 'text-[var(--gris-purple)]'}`}>
+                      {msg.role === 'user' ? 'OPERADOR' : 'GRIS-AI'} 
+                      <span className="opacity-40 font-mono font-normal tracking-widest">[{msg.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}]</span>
+                    </div>
+                    <div className={`max-w-[85%] p-3 text-[13px] leading-relaxed tracking-wide font-inter ${
                       msg.role === 'user' 
-                        ? 'bg-[var(--gris-sky)]/10 border border-[var(--gris-sky)]/40 text-[var(--gris-text-primary)] rounded-tr-none' 
-                        : 'bg-[var(--gris-emerald)]/5 border border-[var(--gris-emerald)]/30 text-[var(--gris-text-primary)] rounded-tl-none'
+                        ? 'bg-[rgba(255,255,255,0.05)] border border-[rgba(255,255,255,0.1)] text-[var(--gris-text-1)]' 
+                        : 'bg-[rgba(123,47,255,0.05)] border border-[rgba(123,47,255,0.2)] text-[var(--gris-text-1)] border-l-2 border-l-[var(--gris-purple)]'
                     }`}>
-                      <div className={`flex items-center gap-1 md:gap-2 mb-1.5 md:mb-2 opacity-50 text-[7px] md:text-[9px] font-black uppercase tracking-[0.05em] md:tracking-[0.2em] ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-                        {msg.role === 'user' ? 'COMANDO_OPERADOR' : 'RESPOSTA_NEURAL'} • {msg.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                      </div>
-                      <div className="prose prose-invert prose-xs max-w-none markdown-body font-medium">
+                      <div className="prose prose-invert prose-xs max-w-none markdown-body">
                         <ReactMarkdown>{msg.content}</ReactMarkdown>
                       </div>
                     </div>
                   </div>
                 ))}
                 {isLoading && (
-                  <div className="flex flex-col items-start relative z-20">
-                    <div className="bg-[var(--gris-emerald)]/5 border border-[var(--gris-emerald)]/30 p-2 md:p-4 rounded-sm flex items-center gap-2 md:gap-4">
-                      <div className="flex gap-1 md:gap-1.5">
-                        <div className="w-1 h-1 md:w-1.5 md:h-1.5 bg-[var(--gris-emerald)] rounded-full animate-bounce" />
-                        <div className="w-1 h-1 md:w-1.5 md:h-1.5 bg-[var(--gris-emerald)] rounded-full animate-bounce [animation-delay:0.2s]" />
-                        <div className="w-1 h-1 md:w-1.5 md:h-1.5 bg-[var(--gris-emerald)] rounded-full animate-bounce [animation-delay:0.4s]" />
-                      </div>
-                      <div className="flex flex-col">
-                        <span className="text-[8px] md:text-[10px] text-[var(--gris-emerald)] tracking-[0.05em] md:tracking-[0.3em] font-black uppercase animate-pulse">
-                          DESCRIPTOGRAFANDO_LINK_NEURAL
-                        </span>
-                        <span className="text-[6px] md:text-[8px] text-[var(--gris-emerald)]/50 tracking-widest uppercase font-bold">
-                          ACESSANDO_NÓS_DISTRIBUÍDOS...
-                        </span>
+                  <div className="flex flex-col items-start relative w-full">
+                    <div className="flex items-center mb-1.5 text-[9px] font-oxanium font-bold uppercase tracking-[0.15em] text-[var(--gris-purple)]">
+                      GRIS-AI
+                    </div>
+                    <div className="bg-[rgba(123,47,255,0.05)] border border-[rgba(123,47,255,0.2)] border-l-2 border-l-[var(--gris-purple)] p-3 flex items-center gap-2 w-24">
+                      <div className="flex gap-1.5">
+                        <div className="w-1.5 h-3 bg-[var(--gris-purple)] animate-[ping_1s_infinite]" />
+                        <div className="w-1.5 h-3 bg-[var(--gris-purple)] animate-[ping_1s_infinite_0.2s]" />
+                        <div className="w-1.5 h-3 bg-[var(--gris-purple)] animate-[ping_1s_infinite_0.4s]" />
                       </div>
                     </div>
                   </div>
@@ -179,56 +173,49 @@ export default function AIAnalyst({ isOpen, onClose, context }: AIAnalystProps) 
             </div>
 
             {/* Quick Actions */}
-            <div className="p-2 md:p-4 border-t border-[var(--gris-emerald)]/30 bg-[var(--gris-void)]/80 flex gap-2 md:gap-3 overflow-x-auto hide-scrollbar">
+            <div className="p-3 border-t border-[rgba(255,255,255,0.05)] bg-[rgba(0,0,0,0.5)] flex gap-2 overflow-x-auto custom-scrollbar z-10">
               <button 
                 onClick={() => {
-                  setInput("Forneça um Briefing de Inteligência de Decisão: Onde focar nossos fundos de capital nos próximos 18 meses com base nos clusters atuais?");
+                  setInput("Briefing tático: Onde investir nos próximos 18 meses com base nos dados atuais?");
                   setTimeout(() => handleSend(), 0);
                 }}
-                className="whitespace-nowrap px-3 py-1.5 md:px-4 md:py-2 bg-[var(--gris-emerald)]/10 border border-[var(--gris-emerald)]/40 text-[var(--gris-emerald)] text-[8px] md:text-[10px] font-black tracking-[0.05em] md:tracking-[0.2em] uppercase hover:bg-[var(--gris-emerald)]/20 transition-all flex items-center gap-1.5 md:gap-2 group/btn"
+                className="whitespace-nowrap px-3 py-2 bg-[rgba(56,189,248,0.1)] border border-[rgba(56,189,248,0.3)] text-[var(--gris-sky)] text-[9px] font-oxanium font-bold tracking-[0.1em] uppercase hover:bg-[rgba(56,189,248,0.2)] transition-all flex items-center gap-1.5"
               >
-                <Terminal className="w-3 h-3 md:w-3.5 md:h-3.5 group-hover/btn:scale-110 transition-transform" />
-                ONDE_INVESTIR
+                <Database className="w-3.5 h-3.5" />
+                ONDE INVESTIR
               </button>
               <button 
                 onClick={() => {
-                  setInput("Cruze as zonas de risco geopolíticas ativas com nossos ativos restritos. Quais portfólios estão em risco crítico de desapropriação ou embargo logístico?");
+                  setInput("Avaliação de Risco Geopolítico: Quais portfólios no mapa atual estão sob ameaça?");
                   setTimeout(() => handleSend(), 0);
                 }}
-                className="whitespace-nowrap px-3 py-1.5 md:px-4 md:py-2 bg-[var(--gris-red)]/10 border border-[var(--gris-red)]/40 text-[var(--gris-red)] text-[8px] md:text-[10px] font-black tracking-[0.05em] md:tracking-[0.2em] uppercase hover:bg-[var(--gris-red)]/20 transition-all flex items-center gap-1.5 md:gap-2 group/btn"
+                className="whitespace-nowrap px-3 py-2 bg-[rgba(239,68,68,0.1)] border border-[rgba(239,68,68,0.3)] text-[var(--gris-red)] text-[9px] font-oxanium font-bold tracking-[0.1em] uppercase hover:bg-[rgba(239,68,68,0.2)] transition-all flex items-center gap-1.5"
               >
-                <ShieldAlert className="w-3 h-3 md:w-3.5 md:h-3.5 group-hover/btn:scale-110 transition-transform" />
-                RISCO_GEOPOLÍTICO
-              </button>
-              <button 
-                onClick={() => {
-                  setInput("Analise anomalias exploratórias e cruzamento de dados. Onde há alta probabilidade de novos recursos ainda não precificados pelo mercado?");
-                  setTimeout(() => handleSend(), 0);
-                }}
-                className="whitespace-nowrap px-3 py-1.5 md:px-4 md:py-2 bg-[var(--gris-sky)]/10 border border-[var(--gris-sky)]/40 text-[var(--gris-sky)] text-[8px] md:text-[10px] font-black tracking-[0.05em] md:tracking-[0.2em] uppercase hover:bg-[var(--gris-sky)]/20 transition-all flex items-center gap-1.5 md:gap-2 group/btn"
-              >
-                <Database className="w-3 h-3 md:w-3.5 md:h-3.5 group-hover/btn:scale-110 transition-transform" />
-                RECURSOS_ESCONDIDOS
+                <ShieldAlert className="w-3.5 h-3.5" />
+                VERIFICAR RISCO
               </button>
             </div>
 
             {/* Input Area */}
-            <div className="p-3 md:p-6 border-t border-[var(--gris-emerald)]/30 bg-[var(--gris-void)]">
-              <div className="relative">
+            <div className="p-4 border-t border-[rgba(255,255,255,0.05)] bg-[rgba(10,14,24,0.9)] z-10 pb-8 md:pb-4">
+              <div className="relative flex">
+                <div className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--gris-purple)]">
+                  <Terminal className="w-4 h-4" />
+                </div>
                 <input 
                   type="text"
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
                   onKeyDown={(e) => e.key === 'Enter' && handleSend()}
-                  placeholder="INSERIR_COMANDO_OU_CONSULTA..."
-                  className="w-full bg-[var(--gris-emerald)]/5 border border-[var(--gris-emerald)]/40 rounded-sm py-2 md:py-4 pl-3 md:pl-5 pr-10 md:pr-14 text-[9px] md:text-[11px] text-[var(--gris-text-primary)] placeholder-[var(--gris-emerald)]/20 focus:outline-none focus:border-[var(--gris-emerald)] focus:bg-[var(--gris-emerald)]/10 transition-all uppercase tracking-[0.05em] md:tracking-[0.2em] font-bold"
+                  placeholder="SOLICITAR ANÁLISE..."
+                  className="w-full bg-[rgba(255,255,255,0.02)] border border-[var(--gris-border-subtle)] py-3.5 pl-9 pr-14 text-[12px] text-white placeholder-[rgba(255,255,255,0.3)] focus:outline-none focus:border-[var(--gris-purple)] transition-all uppercase tracking-[0.05em] font-mono shadow-[inset_0_0_10px_rgba(0,0,0,0.5)]"
                 />
                 <button 
                   onClick={handleSend}
                   disabled={isLoading || !input.trim()}
-                  className="absolute right-1 md:right-3 top-1/2 -translate-y-1/2 p-1.5 md:p-2.5 text-[var(--gris-emerald)] hover:bg-[var(--gris-emerald)]/20 rounded-sm transition-all disabled:opacity-20 disabled:pointer-events-none group/send"
+                  className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 bg-[var(--gris-purple)] text-black hover:bg-white transition-all disabled:opacity-20 flex items-center justify-center shadow-[0_0_15px_rgba(123,47,255,0.5)]"
                 >
-                  <Send className="w-4 h-4 md:w-5 md:h-5 group-hover/send:translate-x-1 group-hover/send:-translate-y-1 transition-transform" />
+                  <Send className="w-3.5 h-3.5" />
                 </button>
               </div>
             </div>

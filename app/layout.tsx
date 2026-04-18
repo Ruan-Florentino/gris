@@ -18,9 +18,21 @@ const inter = Inter({
   variable: '--font-inter',
 });
 
+import { Providers } from '@/components/Providers';
+
 export const metadata: Metadata = {
   title: 'GRIS — Global Resource Intelligence System',
   description: 'The world\'s most advanced platform for visualization, analysis, and intelligence of natural resources, geology, and energy.',
+  icons: {
+    icon: '/logo-gris.png',
+    shortcut: '/logo-gris.png',
+    apple: '/logo-gris.png',
+  },
+  openGraph: {
+    title: 'GRIS — Global Resource Intelligence System',
+    description: 'Sistema tático de inteligência geoespacial.',
+    images: [{ url: '/logo-gris.png' }],
+  },
 };
 
 export default function RootLayout({children}: {children: React.ReactNode}) {
@@ -30,14 +42,9 @@ export default function RootLayout({children}: {children: React.ReactNode}) {
         <link rel="stylesheet" href="https://unpkg.com/cesium@1.140.0/Build/Cesium/Widgets/widgets.css" />
       </head>
       <body suppressHydrationWarning className="font-inter bg-[var(--gris-void)] text-[var(--gris-text-primary)] overflow-hidden">
-        <Script 
-          src="https://unpkg.com/cesium@1.140.0/Build/Cesium/Cesium.js" 
-          strategy="beforeInteractive" 
-        />
-        <Script id="cesium-base-url" strategy="beforeInteractive">
-          {`window.CESIUM_BASE_URL = 'https://unpkg.com/cesium@1.140.0/Build/Cesium/';`}
-        </Script>
-        {children}
+        <Providers>
+          {children}
+        </Providers>
       </body>
     </html>
   );

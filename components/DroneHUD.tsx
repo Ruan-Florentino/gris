@@ -30,7 +30,7 @@ export default function DroneHUD({ target, onClose }: DroneHUDProps) {
       <div className="absolute inset-0 bg-[linear-gradient(transparent_50%,rgba(0,255,156,0.05)_50%)] bg-[length:100%_4px] pointer-events-none" />
       
       {/* Static Noise Overlay */}
-      <div className="absolute inset-0 opacity-[0.03] pointer-events-none mix-blend-overlay" style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg viewBox=%220 0 200 200%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cfilter id=%22noiseFilter%22%3E%3CfeTurbulence type=%22fractalNoise%22 baseFrequency=%220.65%22 numOctaves=%223%22 stitchTiles=%22stitch%22/%3E%3C/filter%3E%3Crect width=%22100%25%22 height=%22100%25%22 filter=%22url(%23noiseFilter)%22/%3E%3C/svg%3E")' }} />
+      <div className="noise-hud" />
 
       {/* Top Left */}
       <div className="absolute top-1.5 md:top-6 left-1.5 md:left-6 flex flex-col gap-0.5 md:gap-2">

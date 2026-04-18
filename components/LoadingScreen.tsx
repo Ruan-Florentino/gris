@@ -2,7 +2,8 @@
 
 import { useEffect, useState } from 'react';
 import { motion } from 'motion/react';
-import { Radar } from 'lucide-react';
+import Image from 'next/image';
+import GrisLogo from '@/components/GrisLogo';
 
 export default function LoadingScreen({ onComplete }: { onComplete?: () => void }) {
   const [progress, setProgress] = useState(0);
@@ -53,10 +54,16 @@ export default function LoadingScreen({ onComplete }: { onComplete?: () => void 
       <div className="absolute inset-0 bg-[linear-gradient(transparent_50%,rgba(0,194,255,0.05)_50%)] bg-[length:100%_4px] pointer-events-none" />
 
       <div className="relative z-10 flex flex-col items-center max-w-md w-full px-6">
-        <Radar className="w-16 h-16 text-[#00FF9C] mb-8 animate-[spin_3s_linear_infinite]" />
+        <div className="relative mb-8">
+          <GrisLogo 
+            size={80} 
+            className="relative z-10 animate-float drop-shadow-[0_0_15px_rgba(0,255,156,0.8)]"
+          />
+          <div className="absolute inset-x-0 -bottom-4 h-12 bg-[var(--gris-emerald)] opacity-20 blur-2xl animate-pulse-glow" />
+        </div>
         
-        <h1 className="text-2xl font-bold tracking-[0.3em] text-[#E8F0FF] mb-2 text-center">
-          GRIS <span className="text-[#00FF9C]">v1.0</span>
+        <h1 className="text-2xl font-black tracking-[0.4em] text-white mb-2 text-center font-oxanium">
+          GRIS <span className="text-[var(--gris-emerald)]">v4.0</span>
         </h1>
         <div className="text-[10px] text-[#00A86B] tracking-[0.2em] uppercase mb-12 text-center">
           Global Resource Intelligence System

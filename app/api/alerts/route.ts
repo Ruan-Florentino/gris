@@ -29,7 +29,7 @@ export async function POST(req: Request) {
     }
 
     // Check if user is PRO
-    if (session.user.plan === 'FREE') {
+    if ((session.user as any).plan === 'FREE') {
       return NextResponse.json({ error: 'Alerts are a PRO feature' }, { status: 403 });
     }
 

@@ -1,10 +1,11 @@
 'use client';
 
+import Image from 'next/image';
 import { useState, useMemo, useCallback, useRef, useEffect, memo } from 'react';
 import dynamic from 'next/dynamic';
 import { motion, AnimatePresence } from 'motion/react';
-import { resourcesData, ResourceData, ResourceType, RESOURCE_LABELS, RESOURCE_COLORS, CATEGORY_LABELS } from '@/lib/data';
-import { Search, Radar, X, Target, Crosshair, Activity, Database, MapPin, Beaker, Download, Lock, Clock } from 'lucide-react';
+import { resourcesData, ResourceData, ResourceType, RESOURCE_LABELS, RESOURCE_COLORS, CATEGORY_LABELS, riskZones, exportRoutes } from '@/lib/data';
+import { Search, X, Target, Crosshair, Activity, Database, MapPin, Beaker, Download, Lock, Clock, Radar } from 'lucide-react';
 import { useRealData } from '@/hooks/useRealData';
 import TemporalSlider from '@/components/TemporalSlider';
 import html2canvas from 'html2canvas';
@@ -17,6 +18,7 @@ import WarRoom from '@/components/WarRoom';
 import StatsDashboard from '@/components/StatsDashboard';
 import WeatherWidget from '@/components/WeatherWidget';
 import { ScrambleText } from '@/components/ScrambleText';
+import GrisLogo from '@/components/GrisLogo';
 
 const getChemicalElement = (type: string) => {
   const elements: Record<string, { symbol: string, number: number, group: string }> = {
@@ -57,14 +59,20 @@ const GlobeMap = dynamic(() => import('@/components/GlobeMap'), {
       <div className="absolute inset-0 bg-[linear-gradient(rgba(56,189,248,0.025)_1px,transparent_1px),linear-gradient(90deg,rgba(56,189,248,0.025)_1px,transparent_1px)] bg-[size:48px_48px]" />
       
       <div className="flex flex-col items-center gap-8 max-w-lg w-full px-8 relative z-10">
-        <div className="relative w-32 h-32">
+        <div className="relative w-32 h-32 flex items-center justify-center">
           <div className="absolute inset-0 border-2 border-[var(--gris-emerald)] opacity-20 rounded-sm" />
           <div className="absolute inset-0 border-2 border-[var(--gris-emerald)] border-t-transparent rounded-sm animate-[spin_2s_linear_infinite]" />
           <div className="absolute inset-4 border-2 border-[var(--gris-sky)] opacity-20 rounded-sm" />
           <div className="absolute inset-4 border-2 border-[var(--gris-sky)] border-b-transparent rounded-sm animate-[spin_3s_linear_infinite_reverse]" />
-          <div className="absolute inset-0 flex items-center justify-center">
-            <Radar className="w-8 h-8 text-[var(--gris-emerald)] animate-pulse" />
+          
+          <div className="relative z-10 animate-float">
+            <GrisLogo 
+              size={48} 
+              className="drop-shadow-[0_0_12px_rgba(0,255,156,0.6)]"
+            />
           </div>
+          
+          <div className="absolute inset-0 bg-[var(--gris-emerald)] opacity-10 blur-xl animate-pulse" />
           
           {/* Scanning dots */}
           <div className="absolute -top-2 left-1/2 -translate-x-1/2 w-1 h-1 bg-[var(--gris-emerald)] rounded-full animate-ping" />
@@ -204,13 +212,6 @@ export default function Home() {
     rare_earth: true,
     copper_belt: true,
     iron_formation: true,
-    polymetallic_nodule: true,
-    hydrothermal_vent: true,
-    deep_sea_minerals: true,
-    seismic_zone: true,
-    fault_line: true,
-    tectonic_plate: true,
-    sedimentary_basin: true,
     cobalt_mine: true,
     nickel_deposit: true,
     platinum_reserve: true,
@@ -230,9 +231,10 @@ export default function Home() {
     chromium_mine: true,
     molybdenum_mine: true,
     vanadium_deposit: true,
-    megacity: true,
-    capital: true,
-    tech_hub: true
+    sedimentary_basin: true,
+    seismic_zone: true,
+    fault_line: true,
+    tectonic_plate: true
   });
 
   // Ensure sidebar is visible on mobile for bottom nav
@@ -286,7 +288,11 @@ export default function Home() {
     setSelectedResource(resource);
     setShowExtraData(false);
     if (resource && globeRef.current) {
-      globeRef.current.flyTo(resource.lat, resource.lng, 50000);
+      globeRef.current.flyTo(resource.lat, resource.lng, 500000);
+      // Dispara o efeito de pulse quando seleciona (feedback tático)
+      setTimeout(() => {
+        globeRef.current?.triggerPulse?.();
+      }, 1500);
     }
   }, []);
 
@@ -307,14 +313,28 @@ export default function Home() {
     const handleToggleWarRoom = () => setShowWarRoom(prev => !prev);
     const handleToggleTemporalMode = () => setTemporalMode(prev => !prev);
     
+    // Resource selection from GlobeMap
+    const handleSelectResourceEvent = (e: any) => {
+      const resourceId = e.detail;
+      const resource = allData.find(r => r.id === resourceId) || null;
+      handleSelectResource(resource);
+    };
+    const handleMapClick = () => {
+      handleSelectResource(null);
+    };
+    
     window.addEventListener('toggle-war-room', handleToggleWarRoom);
     window.addEventListener('toggle-temporal-mode', handleToggleTemporalMode);
+    window.addEventListener('select-resource', handleSelectResourceEvent);
+    window.addEventListener('map-click', handleMapClick);
     
     return () => {
       window.removeEventListener('toggle-war-room', handleToggleWarRoom);
       window.removeEventListener('toggle-temporal-mode', handleToggleTemporalMode);
+      window.removeEventListener('select-resource', handleSelectResourceEvent);
+      window.removeEventListener('map-click', handleMapClick);
     };
-  }, []);
+  }, [allData, handleSelectResource]);
 
   useEffect(() => {
     let interval: NodeJS.Timeout;
@@ -350,7 +370,7 @@ export default function Home() {
     <main className="relative w-screen h-screen overflow-hidden bg-[var(--gris-void)] text-[var(--gris-text-primary)] font-inter selection:bg-[var(--gris-emerald)] selection:text-black">
       
       {/* Noise Overlay - Softened */}
-      <div className="absolute inset-0 pointer-events-none z-50 opacity-[0.01] mix-blend-overlay" style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg viewBox=\'0 0 200 200\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cfilter id=\'noiseFilter\'%3E%3CfeTurbulence type=\'fractalNoise\' baseFrequency=\'0.8\' numOctaves=\'4\' stitchTiles=\'stitch\'/%3E%3C/filter%3E%3Crect width=\'100%25\' height=\'100%25\' filter=\'url(%23noiseFilter)\'/%3E%3C/svg%3E")' }} />
+      <div className="tactical-noise" />
 
       {/* Header */}
       <Header 
@@ -411,9 +431,10 @@ export default function Home() {
         onClose={() => setShowAI(false)}
         context={{
           resources: filteredData,
-          riskZones: [], // Assuming empty for now or pass actual data
-          exportRoutes: [], // Assuming empty for now or pass actual data
-          selectedResource: selectedResource
+          riskZones: riskZones,
+          exportRoutes: exportRoutes,
+          selectedResource: selectedResource,
+          cameraData: globeRef.current?.getCameraPosition?.() || undefined
         }}
       />
 
@@ -424,46 +445,8 @@ export default function Home() {
         data={filteredData}
       />
 
-      {/* Floating Search Bar */}
-      <div className="absolute top-[70px] md:top-[80px] left-1/2 -translate-x-1/2 z-40 w-[90%] max-w-[400px] h-[40px] md:h-[44px] bg-[rgba(0,8,16,0.85)] backdrop-blur-md border border-[var(--gris-border-active)] rounded-none flex items-center px-3 md:px-4 pointer-events-auto group shadow-[0_0_20px_rgba(0,255,156,0.1)]">
-        
-        {/* Animated Corner Brackets */}
-        <div className="absolute -top-[2px] -left-[2px] w-3 h-3 border-t-2 border-l-2 border-[var(--gris-emerald)] opacity-50 group-hover:opacity-100 group-hover:scale-110 transition-all duration-300 origin-top-left" />
-        <div className="absolute -top-[2px] -right-[2px] w-3 h-3 border-t-2 border-r-2 border-[var(--gris-emerald)] opacity-50 group-hover:opacity-100 group-hover:scale-110 transition-all duration-300 origin-top-right" />
-        <div className="absolute -bottom-[2px] -left-[2px] w-3 h-3 border-b-2 border-l-2 border-[var(--gris-emerald)] opacity-50 group-hover:opacity-100 group-hover:scale-110 transition-all duration-300 origin-bottom-left" />
-        <div className="absolute -bottom-[2px] -right-[2px] w-3 h-3 border-b-2 border-r-2 border-[var(--gris-emerald)] opacity-50 group-hover:opacity-100 group-hover:scale-110 transition-all duration-300 origin-bottom-right" />
-        
-        {/* Radar Icon */}
-        <Radar className="w-3.5 h-3.5 md:w-4 md:h-4 text-[var(--gris-emerald)] animate-[spin_8s_linear_infinite] opacity-80" />
-        
-        <input 
-          type="text"
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          placeholder="BUSCAR ALVO..."
-          className="flex-1 bg-transparent border-none outline-none text-[11px] md:text-[12px] font-oxanium font-bold text-[var(--gris-emerald)] placeholder-[var(--gris-text-secondary)] ml-3 md:ml-4 tracking-[0.2em] uppercase focus:placeholder-transparent"
-        />
-        <style jsx>{`
-          input::placeholder {
-            animation: cursor-blink 1s step-end infinite;
-          }
-          @keyframes cursor-blink {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0; }
-          }
-        `}</style>
-
-        <button 
-          onClick={handleDiscover}
-          className="w-[28px] h-[28px] md:w-[32px] md:h-[32px] bg-[rgba(0,255,156,0.1)] border border-[var(--gris-emerald)] flex items-center justify-center hover:bg-[var(--gris-emerald)] transition-colors group/btn"
-          title="Descoberta Orbital"
-        >
-          <Crosshair className="w-3.5 h-3.5 md:w-4 md:h-4 text-[var(--gris-emerald)] group-hover/btn:text-[#000810]" />
-        </button>
-      </div>
-
       {/* Dynamic Coordinates */}
-      <div className="absolute bottom-20 md:bottom-6 right-4 md:right-6 z-40 pointer-events-none flex flex-col items-end gap-1">
+      <div className="absolute bottom-20 md:bottom-24 right-4 md:right-6 z-40 pointer-events-none flex flex-col items-end gap-1">
         <MouseCoordinates />
       </div>
 
@@ -507,161 +490,116 @@ export default function Home() {
         )}
       </AnimatePresence>
 
-      {/* Resource Details Panel */}
+              {/* Target Resource Dossier */}
       <AnimatePresence>
         {selectedResource && (
           <motion.div
-            initial={{ opacity: 0, y: 50, scale: 0.95 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 50, scale: 0.95 }}
-            transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-            className="fixed md:absolute inset-x-0 bottom-0 md:inset-x-auto md:top-24 md:right-6 z-[100] md:z-40 md:w-96 pointer-events-auto"
+            initial={{ opacity: 0, y: 50, x: -50, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, x: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 50, x: -50, scale: 0.95 }}
+            transition={{ type: 'spring', damping: 20, stiffness: 200 }}
+            className="fixed z-50 bottom-24 md:bottom-auto md:top-[72px] lg:left-[320px] md:left-6 md:w-[400px] w-[calc(100%-32px)] mx-4 md:mx-0 bg-[rgba(5,10,14,0.95)] backdrop-blur-2xl border border-[var(--gris-border-subtle)] md:rounded-[4px] shadow-[0_20px_50px_rgba(0,0,0,0.8)] overflow-hidden pointer-events-auto"
           >
-            <div ref={detailsPanelRef} className="panel p-6 flex flex-col gap-5 h-[80vh] md:h-auto md:max-h-[calc(100vh-8rem)] overflow-y-auto custom-scrollbar shadow-2xl md:rounded-3xl rounded-t-3xl border-[var(--gris-border-subtle)] bg-[rgba(3,10,14,0.95)] backdrop-blur-xl">
-              <div className="md:hidden flex justify-center mb-2">
-                <div className="w-12 h-1 bg-[rgba(0,255,156,0.2)] rounded-full" onClick={() => setSelectedResource(null)} />
-              </div>
+            {/* Top scanning line effect */}
+            <div className="absolute top-0 left-0 right-0 h-[1px] bg-[linear-gradient(90deg,transparent,var(--gris-emerald),transparent)] opacity-50 animate-[pulse_2s_infinite]" />
+            <div className="absolute top-0 left-0 w-2 h-2 border-t-2 border-l-2 border-[var(--gris-emerald)] opacity-50" />
+            <div className="absolute top-0 right-0 w-2 h-2 border-t-2 border-r-2 border-[var(--gris-emerald)] opacity-50" />
+            <div className="absolute bottom-0 right-0 w-2 h-2 border-b-2 border-r-2 border-[var(--gris-emerald)] opacity-50" />
+            <div className="absolute bottom-0 left-0 w-2 h-2 border-b-2 border-l-2 border-[var(--gris-emerald)] opacity-50" />
+
+            <div className="p-5 flex flex-col gap-4 relative">
               
-              {/* Header */}
-              <div className="flex justify-between items-start gap-4">
-                <div>
-                  <div className="flex items-center gap-2 mb-2">
-                    <div className={`status-dot ${selectedResource.threatLevel === 'CRITICAL' ? 'critical' : selectedResource.threatLevel === 'ELEVATED' ? 'warning' : 'active'}`} />
-                    <span className="text-[10px] font-inter font-semibold tracking-widest text-[var(--gris-text-secondary)] uppercase">
-                      {selectedResource.classification || 'NÃO CLASSIFICADO'}
-                    </span>
-                  </div>
-                  <h3 className="font-inter text-xl font-bold text-[var(--gris-text-primary)] leading-tight tracking-tight">
-                    {selectedResource.name}
-                  </h3>
+              {/* Header: Type and Close */}
+              <div className="flex justify-between items-start">
+                <div className="flex items-center gap-2">
+                  <div className={`w-2 h-2 rounded-full shadow-[0_0_8px_currentColor] animate-pulse ${
+                    selectedResource.threatLevel === 'CRITICAL' ? 'text-[var(--gris-red)] bg-[var(--gris-red)]' : 
+                    selectedResource.threatLevel === 'ELEVATED' ? 'text-[var(--gris-amber)] bg-[var(--gris-amber)]' : 
+                    'text-[var(--gris-emerald)] bg-[var(--gris-emerald)]'
+                  }`} />
+                  <span className="font-oxanium text-[10px] font-bold text-[var(--gris-text-2)] tracking-[0.2em] uppercase">
+                    {RESOURCE_LABELS[selectedResource.type] || selectedResource.type.replace('_', ' ')}
+                  </span>
                 </div>
+                <div className="flex items-center gap-2">
+                  {getChemicalElement(selectedResource.type) && (
+                    <div className="flex items-center gap-1.5 border border-[var(--gris-border-subtle)] px-2 py-0.5 bg-[rgba(255,255,255,0.02)]">
+                      <span className="text-[11px] font-bold font-mono text-[var(--gris-emerald)]">
+                        {getChemicalElement(selectedResource.type)?.symbol}
+                      </span>
+                      <span className="text-[9px] font-mono text-[var(--gris-text-2)]">
+                        {getChemicalElement(selectedResource.type)?.number}
+                      </span>
+                    </div>
+                  )}
+                  <button onClick={() => handleSelectResource(null)} className="p-1 rounded-sm bg-[rgba(255,255,255,0.05)] hover:bg-[rgba(239,68,68,0.2)] text-[var(--gris-text-2)] hover:text-[var(--gris-red)] transition-all">
+                    <X className="w-4 h-4" />
+                  </button>
+                </div>
+              </div>
+
+              {/* Title and Location */}
+              <div>
+                <h3 className="font-oxanium text-lg font-bold text-white uppercase tracking-[0.1em] leading-tight mb-1">
+                  {selectedResource.name}
+                </h3>
+                <div className="flex items-center gap-2 text-[11px] font-mono text-[var(--gris-text-2)] uppercase tracking-widest">
+                  <span className="w-1.5 h-1.5 border border-[var(--gris-text-2)] rotate-45" />
+                  <ScrambleText text={`${selectedResource.region}, ${selectedResource.country}`} />
+                </div>
+              </div>
+
+              {/* Probability Bar */}
+              <div className="space-y-1.5 border border-[var(--gris-border-subtle)] p-3 bg-[rgba(0,0,0,0.3)]">
+                <div className="flex justify-between items-center">
+                  <span className="text-[9px] font-mono tracking-[0.2em] text-[var(--gris-text-3)] uppercase flex items-center gap-2">
+                    <span className="w-1 h-2 bg-[var(--gris-emerald)]" />
+                    Probabilidade
+                  </span>
+                  <span className="text-[13px] font-mono font-bold text-[var(--gris-emerald)] glow-emerald">{selectedResource.probability}%</span>
+                </div>
+                <div className="h-1.5 w-full bg-[rgba(255,255,255,0.1)] overflow-hidden">
+                  <motion.div 
+                    initial={{ width: 0 }}
+                    animate={{ width: `${selectedResource.probability}%` }}
+                    transition={{ duration: 1, ease: "easeOut" }}
+                    className="h-full bg-[var(--gris-emerald)] shadow-[0_0_10px_var(--gris-emerald)] relative"
+                  >
+                    <div className="absolute inset-0 bg-[linear-gradient(90deg,transparent,rgba(255,255,255,0.8),transparent)] -translate-x-full animate-[slideRight_1.5s_infinite]" />
+                  </motion.div>
+                </div>
+              </div>
+
+              {/* Inline Metrics */}
+              <div className="grid grid-cols-2 gap-px bg-[var(--gris-border-subtle)] border border-[var(--gris-border-subtle)] mt-2">
+                <div className="bg-[rgba(5,10,14,0.95)] p-2">
+                  <span className="block text-[8px] font-mono text-[var(--gris-text-3)] tracking-[0.1em] uppercase mb-1">Impacto Previsto</span>
+                  <span className="text-[12px] font-mono text-white font-bold">{selectedResource.estimatedSize}</span>
+                </div>
+                <div className="bg-[rgba(5,10,14,0.95)] p-2">
+                  <span className="block text-[8px] font-mono text-[var(--gris-text-3)] tracking-[0.1em] uppercase mb-1">Profundidade Tática</span>
+                  <span className="text-[12px] font-mono text-white font-bold">{selectedResource.depth}</span>
+                </div>
+              </div>
+
+              {/* CTAs */}
+              <div className="flex gap-2 pt-2">
                 <button 
-                  onClick={() => handleSelectResource(null)}
-                  className="text-[var(--gris-text-muted)] hover:text-[var(--gris-pink)] transition-colors p-2 bg-white/5 rounded-full border border-white/10 hover:border-[var(--gris-pink)]"
+                  onClick={handleDeepScan}
+                  disabled={isScanning}
+                  className="flex-[2] py-3 bg-[rgba(0,255,156,0.1)] border border-[var(--gris-emerald)] hover:bg-[var(--gris-emerald)] text-[var(--gris-emerald)] hover:text-black hover:shadow-[0_0_20px_rgba(0,255,156,0.3)] text-[10px] font-oxanium font-bold uppercase tracking-[0.2em] flex items-center justify-center gap-2 transition-all relative overflow-hidden"
                 >
-                  <X className="w-4 h-4" />
+                  <div className="absolute inset-0 bg-[linear-gradient(90deg,transparent,rgba(255,255,255,0.2),transparent)] -translate-x-full animate-[slideRight_1.5s_infinite]" />
+                  <Radar className={`w-3.5 h-3.5 ${isScanning ? 'animate-spin' : ''}`} />
+                  {isScanning ? 'EXECUTANDO...' : 'INICIAR_SCAN'}
                 </button>
-              </div>
-
-              {/* Tags */}
-              <div className="flex flex-wrap gap-2">
-                <span className="chip chip-sky flex items-center gap-1">
-                  <Database className="w-3 h-3" />
-                  {CATEGORY_LABELS[selectedResource.category] || selectedResource.category.replace(/_/g, ' ')}
-                </span>
-                <span className="chip chip-emerald flex items-center gap-1">
-                  <Target className="w-3 h-3" />
-                  {RESOURCE_LABELS[selectedResource.type] || selectedResource.type.replace(/_/g, ' ')}
-                </span>
-              </div>
-
-              {/* Chemical Element Profile (if applicable) */}
-              {getChemicalElement(selectedResource.type) && (
-                <motion.div 
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="flex items-center gap-4 bg-gradient-to-br from-white/5 to-white/0 p-4 rounded-2xl border border-white/10"
+                <button 
+                  onClick={handleExportPDF}
+                  className="flex-1 py-3 border border-[var(--gris-border-subtle)] bg-[rgba(255,255,255,0.02)] hover:bg-[rgba(255,255,255,0.08)] text-white text-[10px] font-oxanium font-bold uppercase tracking-[0.2em] flex items-center justify-center gap-2 transition-all"
                 >
-                  <div className="relative flex-shrink-0 w-16 h-16 rounded-xl border border-white/20 flex flex-col items-center justify-center overflow-hidden group">
-                    <div className="absolute inset-0 bg-gradient-to-br from-[var(--gris-pink)]/20 to-[var(--gris-purple)]/20 group-hover:opacity-100 transition-opacity" />
-                    <span className="absolute top-1 left-1.5 text-[9px] font-mono text-white/60">{getChemicalElement(selectedResource.type)?.number}</span>
-                    <span className="text-2xl font-bold font-inter text-white tracking-tighter">{getChemicalElement(selectedResource.type)?.symbol}</span>
-                  </div>
-                  <div>
-                    <div className="text-[10px] font-semibold text-[var(--gris-pink)] uppercase tracking-widest mb-1 flex items-center gap-1">
-                      <Beaker className="w-3 h-3" />
-                      Perfil Químico
-                    </div>
-                    <div className="text-sm font-medium text-white">
-                      {getChemicalElement(selectedResource.type)?.group}
-                    </div>
-                    <div className="text-xs text-white/60 mt-0.5">
-                      Alvo de extração primário
-                    </div>
-                  </div>
-                </motion.div>
-              )}
-
-              {/* Location Info */}
-              <div className="space-y-3 mt-1">
-                <div className="section-header">
-                  <MapPin className="w-3 h-3" />
-                  Dados de Localização
-                </div>
-                <div className="grid grid-cols-2 gap-3 text-sm font-inter text-[var(--gris-text-secondary)] bg-[var(--gris-elevated)] p-4 rounded-2xl border border-[var(--gris-border-subtle)]">
-                  <div>
-                    <span className="block text-[10px] font-semibold text-[var(--gris-text-muted)] uppercase mb-1">Região</span>
-                    <span className="text-[var(--gris-text-primary)]">{selectedResource.region}</span>
-                  </div>
-                  <div>
-                    <span className="block text-[10px] font-semibold text-[var(--gris-text-muted)] uppercase mb-1">País</span>
-                    <span className="text-[var(--gris-text-primary)]">{selectedResource.country}</span>
-                  </div>
-                  <div className="col-span-2 pt-3 border-t border-[var(--gris-border-subtle)]">
-                    <span className="block text-[10px] font-semibold text-[var(--gris-text-muted)] uppercase mb-1">Coordenadas</span>
-                    <span className="text-[var(--gris-sky)] font-mono text-xs">
-                      {Math.abs(selectedResource.lat).toFixed(4)}° {selectedResource.lat >= 0 ? 'N' : 'S'}, {Math.abs(selectedResource.lng).toFixed(4)}° {selectedResource.lng >= 0 ? 'L' : 'O'}
-                    </span>
-                  </div>
-                </div>
-              </div>
-
-              {/* Weather Widget */}
-              <WeatherWidget lat={selectedResource.lat} lng={selectedResource.lng} />
-
-              {/* Metrics */}
-              <div className="space-y-4 mt-1">
-                <div className="section-header">
-                  <Activity className="w-3 h-3" />
-                  Métricas e Análise
-                </div>
-                
-                <div className="space-y-3">
-                  {/* Probability Bar */}
-                  <div className="space-y-1">
-                    <div className="flex justify-between text-[10px] font-mono text-[var(--gris-text-secondary)] uppercase">
-                      <span>Probabilidade</span>
-                      <span className="text-[var(--gris-emerald)]">{selectedResource.probability}%</span>
-                    </div>
-                    <div className="progress-track w-full">
-                      <motion.div 
-                        initial={{ width: 0 }}
-                        animate={{ width: `${selectedResource.probability}%` }}
-                        transition={{ duration: 1, delay: 0.2, ease: "easeOut" }}
-                        className="progress-fill" 
-                      />
-                    </div>
-                  </div>
-
-                  {/* Confidence Bar */}
-                  <div className="space-y-1">
-                    <div className="flex justify-between text-[10px] font-inter font-semibold text-[var(--gris-text-secondary)] uppercase">
-                      <span>Confiança</span>
-                      <span className="text-[var(--gris-sky)]">{selectedResource.confidence}%</span>
-                    </div>
-                    <div className="progress-track w-full">
-                      <motion.div 
-                        initial={{ width: 0 }}
-                        animate={{ width: `${selectedResource.confidence}%` }}
-                        transition={{ duration: 1, delay: 0.4, ease: "easeOut" }}
-                        className="h-full bg-gradient-to-r from-[var(--gris-sky)] to-[var(--gris-purple)] relative overflow-hidden rounded-full"
-                      >
-                        <div className="absolute inset-0 bg-[linear-gradient(90deg,transparent,rgba(255,255,255,0.4),transparent)] bg-[length:200%_100%] animate-[slideRight_2s_linear_infinite]" />
-                      </motion.div>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-2 gap-3">
-                  <div className="metric-card">
-                    <div className="metric-label">Tamanho Estimado</div>
-                    <div className="metric-value text-lg">{selectedResource.estimatedSize}</div>
-                  </div>
-                  <div className="metric-card">
-                    <div className="metric-label">Profundidade</div>
-                    <div className="metric-value text-lg text-[var(--gris-text-secondary)]">{selectedResource.depth}</div>
-                  </div>
-                </div>
+                  <Download className="w-3.5 h-3.5" />
+                  PULL
+                </button>
               </div>
 
               {/* Extra Data from Deep Scan */}
@@ -673,73 +611,19 @@ export default function Home() {
                     exit={{ opacity: 0, height: 0 }}
                     className="overflow-hidden"
                   >
-                    <div className="space-y-3 mt-1 pt-4 border-t border-[var(--gris-border-subtle)]">
-                      <div className="section-header">
-                        <Radar className="w-3 h-3" />
-                        Resultados da Varredura Profunda
-                      </div>
-                      <div className="grid grid-cols-2 gap-3 text-sm font-inter text-[var(--gris-text-secondary)] bg-[var(--gris-elevated)] p-4 rounded-2xl border border-[var(--gris-border-subtle)]">
-                        <div>
-                          <span className="block text-[10px] font-semibold text-[var(--gris-text-muted)] uppercase mb-1">Nível de Ameaça</span>
-                          <span className={`font-bold ${selectedResource.threatLevel === 'CRITICAL' ? 'text-[var(--gris-red)]' : selectedResource.threatLevel === 'ELEVATED' ? 'text-[var(--gris-amber)]' : 'text-[var(--gris-emerald)]'}`}>
-                            {selectedResource.threatLevel === 'CRITICAL' ? 'CRÍTICO' : selectedResource.threatLevel === 'ELEVATED' ? 'ELEVADO' : selectedResource.threatLevel === 'MODERATE' ? 'MODERADO' : 'BAIXO'}
-                          </span>
-                        </div>
-                        <div>
-                          <span className="block text-[10px] font-semibold text-[var(--gris-text-muted)] uppercase mb-1">Fonte</span>
-                          <span className="text-[var(--gris-text-primary)]">{selectedResource.source || 'DESCONHECIDA'}</span>
-                        </div>
-                      </div>
-                    </div>
+                     <div className="pt-3 mt-3 border-t border-[rgba(255,255,255,0.1)]">
+                       <span className="block text-[9px] font-mono text-[var(--gris-emerald)] tracking-[0.2em] uppercase mb-2 flex items-center gap-2">
+                         <Activity className="w-3 h-3" />
+                         TELEMETRIA OBTIDA
+                       </span>
+                       <p className="text-[11px] font-mono text-[var(--gris-text-2)] leading-relaxed uppercase tracking-wide bg-[rgba(0,0,0,0.5)] p-3 border border-[rgba(255,255,255,0.05)]">
+                         <ScrambleText text={selectedResource.description || "Nenhum relatório de inteligência detalhado disponível. Assinatura termal inconclusiva."} />
+                       </p>
+                     </div>
                   </motion.div>
                 )}
               </AnimatePresence>
 
-              {/* Description */}
-              <div className="space-y-3 mt-1">
-                <div className="section-header">Relatório de Inteligência</div>
-                <div className="relative bg-[var(--gris-elevated)] p-5 rounded-2xl border border-[var(--gris-border-subtle)] shadow-inner">
-                  <p className="text-sm font-inter text-[var(--gris-text-secondary)] leading-relaxed">
-                    {selectedResource.description || "Nenhum relatório de inteligência detalhado disponível para este setor. Aguardando telemetria de satélite adicional."}
-                  </p>
-                </div>
-              </div>
-
-              {/* Live Telemetry */}
-              <div className="grid grid-cols-3 gap-2 mt-2 border-t border-[var(--gris-border-subtle)] pt-4">
-                <div className="text-center">
-                  <div className="text-[10px] text-[var(--gris-text-muted)] font-inter font-semibold uppercase">Status</div>
-                  <div className="text-[11px] text-[var(--gris-emerald)] font-inter font-bold mt-1 animate-pulse">ATIVO</div>
-                </div>
-                <div className="text-center border-l border-r border-[var(--gris-border-subtle)]">
-                  <div className="text-[10px] text-[var(--gris-text-muted)] font-inter font-semibold uppercase">Sinal</div>
-                  <div className="text-[11px] text-[var(--gris-sky)] font-inter font-bold mt-1">FORTE</div>
-                </div>
-                <div className="text-center">
-                  <div className="text-[10px] text-[var(--gris-text-muted)] font-inter font-semibold uppercase">Sinc</div>
-                  <div className="text-[11px] text-[var(--gris-text-primary)] font-inter font-bold mt-1">0.02s</div>
-                </div>
-              </div>
-              
-              {/* Action Buttons */}
-              <div className="flex gap-2 mt-2">
-                <button 
-                  onClick={handleDeepScan}
-                  disabled={isScanning}
-                  className="btn-primary flex-1 py-4 text-[12px] font-bold uppercase tracking-widest flex items-center justify-center gap-2 group relative overflow-hidden disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  <div className="absolute inset-0 bg-[linear-gradient(90deg,transparent,rgba(255,255,255,0.2),transparent)] -translate-x-full group-hover:animate-[slideRight_1s_ease-in-out_infinite]" />
-                  <Radar className={`w-4 h-4 ${isScanning ? 'animate-spin' : 'group-hover:animate-spin'}`} />
-                  {isScanning ? 'Varrendo...' : 'Varredura Profunda'}
-                </button>
-                <button 
-                  onClick={handleExportPDF}
-                  className="btn-primary flex-1 py-4 text-[12px] font-bold uppercase tracking-widest flex items-center justify-center gap-2 group relative overflow-hidden bg-[var(--gris-pink)]/10 border-[var(--gris-pink)]/40 text-[var(--gris-pink)] hover:bg-[var(--gris-pink)]/20"
-                >
-                  <Download className="w-4 h-4 group-hover:translate-y-1 transition-transform" />
-                  Exportar PDF
-                </button>
-              </div>
             </div>
           </motion.div>
         )}

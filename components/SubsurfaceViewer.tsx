@@ -182,7 +182,7 @@ export default memo(function SubsurfaceViewer({ resource, isOpen, onClose }: Sub
                   <div>
                     <div className="text-[5px] md:text-[9px] text-[#00E5FF]/60 uppercase tracking-widest mb-0.5 md:mb-1">Host Rock</div>
                     <div className="text-[8px] md:text-sm font-bold text-[#E8F0FF]">
-                      {resource.category === 'STRATEGIC_ENERGY' ? 'Porous Sandstone / Shale' : 'Igneous / Metamorphic'}
+                      {resource.category === 'COMBUSTIVEIS_FOSSEIS' ? 'Porous Sandstone / Shale' : 'Igneous / Metamorphic'}
                     </div>
                   </div>
                   <div>

@@ -76,138 +76,135 @@ export default memo(function DetailsPanel({ resource, onClose, onGenerateBriefin
           animate={{ y: 0, opacity: 1 }}
           exit={{ y: '100%', opacity: 0 }}
           transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-          className="fixed bottom-0 left-0 right-0 md:absolute md:top-32 md:bottom-12 md:left-auto md:right-6 md:w-[400px] z-40 pointer-events-none flex flex-col max-h-[85vh] md:max-h-none pb-1 md:pb-0"
+          className="fixed bottom-0 left-0 right-0 md:absolute md:top-32 md:bottom-12 md:left-auto md:right-6 md:w-[420px] z-40 pointer-events-none flex flex-col max-h-[85vh] md:max-h-none pb-1 md:pb-0"
         >
-          <div className="h-full bg-[#081018]/98 backdrop-blur-3xl border-t md:border border-[#00E5FF]/40 rounded-t-xl md:rounded-sm p-2 md:p-8 pointer-events-auto shadow-[0_-20px_60px_rgba(0,0,0,0.8)] md:shadow-[0_0_50px_rgba(0,229,255,0.2)] flex flex-col font-mono relative overflow-hidden group">
+          <div className="panel h-full flex flex-col pointer-events-auto shadow-[0_0_50px_rgba(0,0,0,0.8)] border border-[var(--gris-border)] backdrop-blur-3xl group">
             
-            {/* Hardware Accents */}
-            <div className="absolute top-0 left-0 w-6 h-6 border-t-2 border-l-2 border-[#00E5FF]/30 rounded-tl-xl md:rounded-tl-sm" />
-            <div className="absolute bottom-0 right-0 w-6 h-6 border-b-2 border-r-2 border-[#00E5FF]/30 rounded-br-sm" />
+            {/* Edge Accents */}
+            <div className="bracket-corners absolute inset-0 pointer-events-none" />
 
             {/* Mobile Drag Handle */}
-            <div className="w-8 h-0.5 bg-[#00E5FF]/20 rounded-full mx-auto mb-1.5 md:hidden" />
+            <div className="w-8 h-1 bg-[var(--gris-border)] rounded-full mx-auto my-2 md:hidden" />
             
             {/* Scanline effect */}
-            <div className="absolute inset-0 bg-[linear-gradient(transparent_50%,rgba(0,229,255,0.03)_50%)] bg-[length:100%_4px] pointer-events-none" />
+            <div className="absolute inset-0 bg-[linear-gradient(transparent_50%,rgba(0,255,156,0.02)_50%)] bg-[length:100%_4px] pointer-events-none" />
 
-            <div className="flex justify-between items-start mb-1.5 md:mb-8 relative z-10">
-              <div>
-                <div className="text-[6px] md:text-[10px] text-[#00E5FF] font-black tracking-[0.1em] md:tracking-[0.3em] mb-0.5 md:mb-2 flex items-center gap-1 md:gap-2">
-                  <Target className="w-2 h-2 md:w-4 md:h-4" />
-                  OBJECTIVE_ID: {resource.id}
-                </div>
-                <h2 className={`text-sm md:text-2xl font-black uppercase tracking-[0.05em] leading-tight ${isDecrypting ? 'text-[#FFB800]' : 'text-[#E8F0FF]'}`}>
-                  {isDecrypting ? scrambledName : resource.name}
-                </h2>
+            <div className="panel-header flex justify-between items-center relative z-10 shrink-0">
+              <div className="flex items-center gap-2">
+                <Target className="w-3.5 h-3.5" />
+                <span>OBJECTIVE_ID: <span className="text-[var(--gris-text-1)]">{resource.id}</span></span>
               </div>
               <button 
                 onClick={onClose}
-                className="p-1 md:p-2 hover:bg-[#FF3B3B]/20 text-[#00E5FF] hover:text-[#FF3B3B] rounded-sm transition-all border border-white/5 hover:border-[#FF3B3B]/50 group/close"
+                className="p-1 hover:bg-[var(--gris-danger)] hover:text-white text-[var(--gris-text-2)] transition-all rounded-sm group/close"
               >
-                <X className="w-2.5 h-2.5 md:w-5 md:h-5 group-hover:rotate-90 transition-transform" />
+                <X className="w-4 h-4 group-hover/close:rotate-90 transition-transform" />
               </button>
             </div>
 
-            <div className="flex-1 overflow-y-auto custom-scrollbar pr-1 md:pr-3 space-y-1.5 md:space-y-8 relative z-10">
+            <div className="flex-1 overflow-y-auto custom-scrollbar p-4 space-y-6 relative z-10">
               
-              {/* Details Grid */}
-              <div className="grid grid-cols-1 gap-0.5 md:gap-1 bg-white/2 border border-white/5 p-1 md:p-2 rounded-sm">
-                <DetailRow label="CLASSIFICATION" value={resource.classification || 'SECRET'} icon={<Shield />} color={resource.threatLevel === 'CRITICAL' ? '#FF3B3B' : '#FFB800'} highlight />
+              {/* Header Title */}
+              <div>
+                <h2 className={`font-oxanium text-lg md:text-2xl font-black uppercase tracking-widest leading-tight ${isDecrypting ? 'text-[var(--gris-amber)]' : 'text-[var(--gris-text-1)]'}`}>
+                  {isDecrypting ? scrambledName : resource.name}
+                </h2>
+              </div>
+              <div className="grid grid-cols-1 gap-1 border border-[var(--gris-border)] p-2 rounded-sm bg-black/40">
+                <DetailRow label="CLASSIFIC." value={resource.classification || 'SECRET'} icon={<Shield />} color={resource.threatLevel === 'CRITICAL' ? 'var(--gris-danger)' : 'var(--gris-amber)'} highlight />
                 <DetailRow label="ASSET_TYPE" value={RESOURCE_LABELS[resource.type]} icon={<Database />} color={RESOURCE_COLORS[resource.type]} />
                 <DetailRow label="GEOLOCATION" value={resource.country} icon={<Globe />} />
                 <DetailRow label="COORDINATES" value={`${resource.lat.toFixed(4)}°N, ${resource.lng.toFixed(4)}°E`} icon={<Navigation />} />
                 <DetailRow label="ALT_DEPTH" value={resource.depth} icon={<Activity />} />
-                <DetailRow label="INTEL_SOURCE" value={resource.source || 'NRO_SATELLITE_72'} icon={<Satellite />} />
+                <DetailRow label="INTEL_SRC" value={resource.source || 'NRO_SATELLITE_72'} icon={<Satellite />} />
               </div>
 
               {/* Description */}
-              <div className="pt-1.5 md:pt-6 border-t border-white/10">
-                <div className="text-[6px] md:text-[10px] text-[#00E5FF] font-black tracking-[0.1em] md:tracking-[0.3em] mb-0.5 md:mb-4 flex items-center gap-1 md:gap-2">
-                  <FileText className="w-2 h-2 md:w-4 md:h-4" />
+              <div className="pt-4 border-t border-[var(--gris-border)]">
+                <div className="section-header">
+                  <FileText className="w-3.5 h-3.5" />
                   ANALYSIS_REPORT
                 </div>
-                <div className="bg-white/2 border border-white/5 p-1 md:p-4 rounded-sm relative">
-                  <div className="absolute top-0 left-0 w-1.5 h-1.5 border-t border-l border-[#00FF9C]/50" />
-                  <p className="text-[7px] md:text-[11px] text-[#E8F0FF]/90 leading-relaxed tracking-wide min-h-[25px] md:min-h-[80px] font-medium">
+                <div className="bg-[var(--gris-card)] border border-[var(--gris-border)] p-3 rounded-sm relative">
+                  <div className="absolute top-0 left-0 w-1.5 h-1.5 border-t border-l border-[var(--gris-emerald)]" />
+                  <p className="font-mono text-[11px] text-[var(--gris-text-2)] leading-relaxed tracking-wide min-h-[60px]">
                     {displayedText}
-                    <span className="inline-block w-0.5 h-2 md:w-2 md:h-4 bg-[#00FF9C] ml-1 animate-pulse align-middle" />
+                    <span className="inline-block w-1.5 h-3 bg-[var(--gris-emerald)] ml-1 animate-pulse align-middle" />
                   </p>
                 </div>
               </div>
 
               {/* Probability Bar */}
-              <div className="pt-1.5 md:pt-6 border-t border-white/10">
-                <div className="flex justify-between items-end mb-0.5 md:mb-3">
-                  <div className="text-[6px] md:text-[10px] text-[#00E5FF] font-black tracking-[0.1em] md:tracking-[0.3em] flex items-center gap-1 md:gap-2 uppercase">
-                    <Percent className="w-2 h-2 md:w-4 md:h-4" />
+              <div className="pt-4 border-t border-[var(--gris-border)]">
+                <div className="flex justify-between items-end mb-2">
+                  <div className="section-header mb-0">
+                    <Percent className="w-3.5 h-3.5" />
                     CONFIDENCE_SCORE
                   </div>
-                  <div className="text-[10px] md:text-lg font-black text-[#00FF9C] tracking-tighter leading-none">{resource.probability}%</div>
+                  <div className="font-oxanium text-lg font-black text-glow-emerald text-[var(--gris-emerald)] leading-none">{resource.probability}%</div>
                 </div>
-                <div className="h-0.5 md:h-2 bg-white/5 rounded-full overflow-hidden border border-white/5">
+                <div className="progress-track">
                   <motion.div 
                     initial={{ width: 0 }}
                     animate={{ width: `${resource.probability}%` }}
                     transition={{ duration: 1.5, ease: "easeOut" }}
-                    className="h-full bg-gradient-to-r from-[#00E5FF] via-[#00FF9C] to-[#00FF9C] shadow-[0_0_10px_rgba(0,255,156,0.3)]" 
+                    className="progress-fill glow-emerald" 
                   />
                 </div>
               </div>
 
               {/* Geological Composition */}
-              <div className="pt-1.5 md:pt-6 border-t border-white/10">
-                <div className="text-[6px] md:text-[10px] text-[#00E5FF] font-black tracking-[0.1em] md:tracking-[0.3em] mb-1 md:mb-5 flex items-center gap-1 md:gap-2 uppercase">
-                  <Activity className="w-2 h-2 md:w-4 md:h-4" />
+              <div className="pt-4 border-t border-[var(--gris-border)]">
+                <div className="section-header">
+                  <Activity className="w-3.5 h-3.5" />
                   GEOLOGICAL_COMPOSITION
                 </div>
-                <div className="grid grid-cols-1 gap-0.5 md:gap-4">
-                  <CompositionBar label="SILICA_CONTENT" value={45} color="#00E5FF" />
-                  <CompositionBar label="FERROUS_METALS" value={28} color="#FF3B3B" />
-                  <CompositionBar label="MAGNESIUM_OXIDE" value={15} color="#00FF9C" />
-                  <CompositionBar label="TRACE_ELEMENTS" value={12} color="#FFB800" />
+                <div className="grid grid-cols-1 gap-3">
+                  <CompositionBar label="SILICA_CONTENT" value={45} color="var(--gris-sky)" />
+                  <CompositionBar label="FERROUS_METALS" value={28} color="var(--gris-danger)" />
+                  <CompositionBar label="MAGNESIUM_OXIDE" value={15} color="var(--gris-emerald)" />
+                  <CompositionBar label="TRACE_ELEMENTS" value={12} color="var(--gris-amber)" />
                 </div>
               </div>
 
               {/* Tactical Analysis */}
-              <div className="pt-1.5 md:pt-6 border-t border-white/10 pb-1 md:pb-6">
-                <div className="text-[6px] md:text-[10px] text-[#00E5FF] font-black tracking-[0.1em] md:tracking-[0.3em] mb-1 md:mb-5 flex items-center gap-1 md:gap-2 uppercase">
-                  <Shield className="w-2 h-2 md:w-4 md:h-4" />
+              <div className="pt-4 border-t border-[var(--gris-border)] pb-2">
+                <div className="section-header">
+                  <Shield className="w-3.5 h-3.5" />
                   TACTICAL_ASSESSMENT
                 </div>
-                <div className="grid grid-cols-2 gap-1 md:gap-4 mb-1.5 md:mb-6">
-                  <div className="bg-white/2 border border-white/5 p-1 md:p-3 rounded-sm relative overflow-hidden">
-                    <div className="absolute top-0 left-0 w-0.5 h-full bg-[#FF3B3B]/50" />
-                    <div className="text-[4px] md:text-[9px] text-white/30 tracking-widest mb-0.5 md:mb-1.5 font-bold uppercase">Threat Level</div>
-                    <div className={`text-[7px] md:text-xs font-black tracking-[0.05em] md:tracking-[0.2em] ${resource.threatLevel === 'CRITICAL' ? 'text-[#FF3B3B]' : 'text-[#00FF9C]'}`}>
+                <div className="grid grid-cols-2 gap-3 mb-4">
+                  <div className="metric-card relative">
+                    <div className="absolute top-0 left-0 w-0.5 h-full bg-[var(--gris-danger)]" />
+                    <div className="metric-label">Threat Level</div>
+                    <div className={`metric-value ${resource.threatLevel === 'CRITICAL' ? 'text-[var(--gris-danger)]' : 'text-[var(--gris-emerald)]'}`}>
                       {resource.threatLevel || 'LOW_RISK'}
                     </div>
                   </div>
-                  <div className="bg-white/2 border border-white/5 p-1 md:p-3 rounded-sm relative overflow-hidden">
-                    <div className="absolute top-0 left-0 w-0.5 h-full bg-[#FFB800]/50" />
-                    <div className="text-[4px] md:text-[9px] text-white/30 tracking-widest mb-0.5 md:mb-1.5 font-bold uppercase">Strategic Val</div>
-                    <div className="text-[7px] md:text-xs font-black text-[#FFB800] tracking-[0.05em] md:tracking-[0.2em]">
+                  <div className="metric-card relative">
+                    <div className="absolute top-0 left-0 w-0.5 h-full bg-[var(--gris-amber)]" />
+                    <div className="metric-label">Strategic Val</div>
+                    <div className="metric-value text-[var(--gris-amber)]">
                       {resource.probability > 80 ? 'PRIORITY_1' : 'PRIORITY_2'}
                     </div>
                   </div>
                 </div>
 
-                <div className="flex flex-col gap-1 md:gap-3">
+                <div className="flex flex-col gap-2">
                   <button 
                     onClick={onGenerateBriefing}
-                    className="w-full flex items-center justify-center gap-1 md:gap-3 py-1 md:py-4 bg-[#00FF9C]/5 border border-[#00FF9C]/30 text-[#00FF9C] hover:bg-[#00FF9C]/15 transition-all rounded-sm group/btn relative overflow-hidden"
+                    className="btn-tactical w-full flex items-center justify-center gap-2 py-3"
                   >
-                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent -translate-x-full group-hover/btn:translate-x-full transition-transform duration-1000" />
-                    <FileSearch className="w-2.5 h-2.5 md:w-5 md:h-5 group-hover/btn:scale-110 transition-transform" />
-                    <span className="text-[7px] md:text-[11px] font-black tracking-[0.1em] md:tracking-[0.3em] uppercase">Generate Briefing</span>
+                    <FileSearch className="w-4 h-4" />
+                    <span className="font-black text-[11px]">Generate Briefing</span>
                   </button>
                   {onSubsurfaceScan && (
                     <button 
                       onClick={onSubsurfaceScan}
-                      className="w-full flex items-center justify-center gap-1 md:gap-3 py-1 md:py-4 bg-[#00E5FF]/5 border border-[#00E5FF]/30 text-[#00E5FF] hover:bg-[#00E5FF]/15 transition-all rounded-sm group/btn relative overflow-hidden"
+                      className="btn-tactical w-full flex items-center justify-center gap-2 py-3 !border-[var(--gris-sky)] !text-[var(--gris-sky)] hover:!bg-[rgba(56,189,248,0.1)] hover:glow-sky"
                     >
-                      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent -translate-x-full group-hover/btn:translate-x-full transition-transform duration-1000" />
-                      <Layers className="w-2.5 h-2.5 md:w-5 md:h-5 group-hover/btn:scale-110 transition-transform" />
-                      <span className="text-[7px] md:text-[11px] font-black tracking-[0.1em] md:tracking-[0.3em] uppercase">Subsurface Scan</span>
+                      <Layers className="w-4 h-4" />
+                      <span className="font-black text-[11px]">Subsurface Scan</span>
                     </button>
                   )}
                 </div>
@@ -223,13 +220,13 @@ export default memo(function DetailsPanel({ resource, onClose, onGenerateBriefin
 
 function CompositionBar({ label, value, color }: { label: string, value: number, color: string }) {
   return (
-    <div className="space-y-0.5 md:space-y-1">
-      <div className="flex justify-between text-[6px] md:text-[8px] tracking-widest text-[#E8F0FF]/60">
+    <div className="space-y-1">
+      <div className="flex justify-between font-mono text-[9px] tracking-widest text-[var(--gris-text-2)]">
         <span>{label}</span>
-        <span>{value}%</span>
+        <span style={{ color }}>{value}%</span>
       </div>
-      <div className="h-0.5 md:h-1 bg-white/5 rounded-full overflow-hidden">
-        <div className="h-full" style={{ width: `${value}%`, backgroundColor: color }} />
+      <div className="progress-track" style={{ height: '2px' }}>
+        <div className="progress-fill" style={{ width: `${value}%`, background: color }} />
       </div>
     </div>
   );
@@ -237,12 +234,12 @@ function CompositionBar({ label, value, color }: { label: string, value: number,
 
 function DetailRow({ label, value, icon, color, highlight }: { label: string, value: React.ReactNode, icon?: React.ReactNode, color?: string, highlight?: boolean }) {
   return (
-    <div className="flex items-center justify-between py-1 md:py-2 border-b border-[#00E5FF]/20 last:border-0">
-      <span className="text-[8px] md:text-[10px] text-[#00E5FF]/70 tracking-widest flex items-center gap-1.5 md:gap-2">
-        {icon && React.cloneElement(icon as React.ReactElement<any>, { className: 'w-2.5 h-2.5 md:w-3 md:h-3', style: { color: color || 'inherit' } })}
+    <div className="flex items-center justify-between py-1.5 border-b border-[var(--gris-border)] last:border-0">
+      <span className="font-mono text-[10px] text-[var(--gris-text-3)] tracking-widest flex items-center gap-2">
+        {icon && React.cloneElement(icon as React.ReactElement<any>, { className: 'w-3 h-3', style: { color: color || 'inherit' } })}
         {label}
       </span>
-      <span className={`text-[9px] md:text-xs tracking-wider text-right ${highlight ? 'text-[#00FF9C] font-bold' : 'text-[#E8F0FF]'}`}>
+      <span className={`font-mono text-[10px] tracking-wider text-right uppercase ${highlight ? 'text-glow-emerald text-[var(--gris-emerald)] font-bold' : 'text-[var(--gris-text-1)]'}`}>
         {value}
       </span>
     </div>

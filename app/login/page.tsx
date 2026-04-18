@@ -3,7 +3,9 @@
 import React, { useState } from 'react';
 import { signIn } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
-import { Shield, Lock, ChevronRight, Terminal } from 'lucide-react';
+import { Shield, ChevronRight } from 'lucide-react';
+import Image from 'next/image';
+import GrisLogo from '@/components/GrisLogo';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -20,82 +22,100 @@ export default function LoginPage() {
     });
 
     if (res?.error) {
-      setError('FALHA NA AUTENTICAÇÃO. VERIFIQUE CREDENCIAIS.');
+      setError('ACESSO NEGADO. CREDENCIAIS INVÁLIDAS.');
     } else {
       router.push('/');
     }
   };
 
   return (
-    <div className="min-h-screen bg-[var(--gris-void)] flex items-center justify-center p-4 relative overflow-hidden">
-      {/* Background Grid Accent */}
-      <div className="absolute inset-0 bg-[linear-gradient(rgba(0,255,156,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(0,255,156,0.03)_1px,transparent_1px)] bg-[size:30px_30px] opacity-30 pointer-events-none" />
-      
-      {/* Scanline effect */}
-      <div className="absolute inset-0 bg-[linear-gradient(transparent_50%,rgba(0,255,156,0.02)_50%)] bg-[length:100%_4px] pointer-events-none" />
-
-      <div className="panel w-full max-w-md relative z-10">
-        <div className="panel-header">
-          <span className="bracket-text">AUTENTICAÇÃO_SISTEMA</span>
-          <Shield className="w-4 h-4" />
+    <div className="min-h-screen bg-[var(--gris-void)] flex flex-col items-center justify-center p-4 relative overflow-hidden">
+      {/* Blurred 3D Globe Background Illusion */}
+      <div className="absolute inset-0 z-0 flex items-center justify-center pointer-events-none opacity-20">
+        <div className="w-[120vh] h-[120vh] rounded-full border-[2px] border-[rgba(255,255,255,0.05)] bg-[radial-gradient(ellipse_at_center,rgba(0,255,156,0.1)_0%,transparent_70%)] blur-[4px]">
+          <div className="absolute inset-10 rounded-full border-[1px] border-[var(--gris-primary)] opacity-10 animate-[spin_60s_linear_infinite]" />
+          <div className="absolute inset-20 rounded-full border-[1px] border-[var(--gris-accent)] opacity-5 animate-[spin_40s_linear_infinite_reverse]" />
+          <div className="absolute inset-0 bg-[linear-gradient(rgba(0,255,156,0.05)_1px,transparent_1px),linear-gradient(90deg,rgba(0,255,156,0.05)_1px,transparent_1px)] bg-[size:40px_40px] opacity-20 rounded-full [mask-image:radial-gradient(ellipse_at_center,black_30%,transparent_70%)]" />
         </div>
+      </div>
+
+      <div className="glass-panel w-full max-w-[420px] rounded-3xl relative z-10 p-8 shadow-[0_20px_50px_rgba(0,0,0,0.8)] border-t-[rgba(255,255,255,0.2)]">
         
-        <div className="p-8">
-          <div className="flex flex-col items-center mb-8">
-            <Terminal className="w-12 h-12 text-[var(--gris-emerald)] mb-4" />
-            <h1 className="text-2xl font-bold tracking-widest text-[var(--gris-emerald)] uppercase">GRIS</h1>
-            <p className="text-[var(--gris-text-secondary)] text-xs font-mono mt-2 uppercase tracking-widest">Global Resource Intelligence</p>
-          </div>
-
-          <form onSubmit={handleSubmit} className="space-y-6">
-            {error && (
-              <div className="bg-[var(--gris-red)]/10 border border-[var(--gris-red)]/30 text-[var(--gris-red)] p-3 text-xs font-mono text-center uppercase">
-                {error}
-              </div>
-            )}
+        <div className="flex flex-col items-center mb-10 text-center">
+          <div className="relative mb-6">
+            <div className="relative z-10 p-4 rounded-full bg-black/40 border border-[var(--gris-emerald)]/30 backdrop-blur-xl animate-float">
+              <GrisLogo 
+                size={64} 
+                className="drop-shadow-[0_0_10px_rgba(0,255,156,0.6)]"
+              />
+            </div>
+            <div className="absolute inset-0 bg-[var(--gris-emerald)] opacity-20 blur-3xl animate-pulse-glow" />
             
-            <div className="space-y-2">
-              <label className="text-[10px] text-[var(--gris-emerald)] font-mono uppercase tracking-widest">Identificação (Email)</label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 w-[2px] bg-[var(--gris-emerald)] opacity-50" />
-                <input 
-                  type="email" 
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="w-full bg-[rgba(0,255,156,0.03)] border border-[rgba(0,255,156,0.1)] rounded-sm py-3 pl-4 pr-3 text-sm text-[var(--gris-text-primary)] focus:outline-none focus:border-[var(--gris-emerald)] focus:shadow-[0_0_10px_rgba(0,255,156,0.1)] transition-all font-mono"
-                  placeholder="operador@gris.com"
-                  required
-                />
-              </div>
-            </div>
-
-            <div className="space-y-2">
-              <label className="text-[10px] text-[var(--gris-emerald)] font-mono uppercase tracking-widest">Código de Acesso (Senha)</label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 w-[2px] bg-[var(--gris-emerald)] opacity-50" />
-                <Lock className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--gris-text-secondary)]" />
-                <input 
-                  type="password" 
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="w-full bg-[rgba(0,255,156,0.03)] border border-[rgba(0,255,156,0.1)] rounded-sm py-3 pl-4 pr-10 text-sm text-[var(--gris-text-primary)] focus:outline-none focus:border-[var(--gris-emerald)] focus:shadow-[0_0_10px_rgba(0,255,156,0.1)] transition-all font-mono"
-                  placeholder="••••••••"
-                  required
-                />
-              </div>
-            </div>
-
-            <button type="submit" className="w-full btn-tactical py-4 flex items-center justify-center gap-2 group mt-8">
-              <span className="font-bold tracking-widest text-sm">INICIAR SESSÃO</span>
-              <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-            </button>
-          </form>
-
-          <div className="mt-8 text-center">
-            <p className="text-[10px] text-[var(--gris-text-secondary)] font-mono uppercase">
-              Sem credenciais? <a href="/cadastro" className="text-[var(--gris-sky)] hover:underline">Solicitar Acesso</a>
-            </p>
+            {/* Animated Rings */}
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-24 h-24 border border-[var(--gris-emerald)]/20 rounded-full animate-ping [animation-duration:3s]" />
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-32 h-32 border border-[var(--gris-emerald)]/10 rounded-full animate-ping [animation-duration:4s]" />
           </div>
+          
+          <h1 className="text-3xl font-black tracking-tight text-white mb-1 font-oxanium uppercase">Autorização</h1>
+          <p className="text-[var(--gris-emerald)] text-[10px] font-oxanium uppercase tracking-[0.4em] opacity-70">Acesso ao Terminal Orbital</p>
+        </div>
+
+        <form onSubmit={handleSubmit} className="space-y-5">
+          {error && (
+            <div className="bg-[var(--gris-danger)]/10 border border-[var(--gris-danger)]/30 rounded-xl p-4 text-[11px] font-oxanium text-[var(--gris-danger)] text-center tracking-wider uppercase shadow-[0_0_15px_rgba(255,45,85,0.2)]">
+              {error}
+            </div>
+          )}
+          
+          <div className="space-y-2 group">
+            <label className="text-[10px] text-[var(--gris-text-2)] font-oxanium uppercase tracking-widest pl-1 group-focus-within:text-[var(--gris-primary)] transition-colors">Identificação Oculta</label>
+            <div className="relative overflow-hidden rounded-xl bg-[rgba(0,0,0,0.3)] border border-[rgba(255,255,255,0.08)] group-focus-within:border-[var(--gris-primary)] transition-colors">
+              <div className="absolute inset-x-0 bottom-0 h-[1px] bg-[var(--gris-primary)] -translate-x-full group-focus-within:translate-x-0 transition-transform duration-500 ease-out" />
+              <input 
+                type="email" 
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="w-full bg-transparent py-4 pl-4 pr-3 text-sm text-[var(--gris-text-1)] focus:outline-none placeholder-[var(--gris-text-3)] transition-all font-inter"
+                placeholder="operador@gris.cloud"
+                required
+              />
+            </div>
+          </div>
+
+          <div className="space-y-2 group">
+            <div className="flex justify-between items-center pl-1 pr-1">
+              <label className="text-[10px] text-[var(--gris-text-2)] font-oxanium uppercase tracking-widest group-focus-within:text-[var(--gris-primary)] transition-colors">Código Criptográfico</label>
+            </div>
+            <div className="relative overflow-hidden rounded-xl bg-[rgba(0,0,0,0.3)] border border-[rgba(255,255,255,0.08)] group-focus-within:border-[var(--gris-primary)] transition-colors">
+              <div className="absolute inset-x-0 bottom-0 h-[1px] bg-[var(--gris-primary)] -translate-x-full group-focus-within:translate-x-0 transition-transform duration-500 ease-out" />
+              <input 
+                type="password" 
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="w-full bg-transparent py-4 pl-4 pr-4 text-sm text-[var(--gris-text-1)] focus:outline-none placeholder-[var(--gris-text-3)] transition-all font-inter tracking-[0.2em]"
+                placeholder="••••••••"
+                required
+              />
+            </div>
+          </div>
+
+          <button type="submit" className="w-full mt-8 py-5 rounded-xl bg-[var(--gris-primary)] text-black flex items-center justify-center gap-2 group relative overflow-hidden transition-all hover:shadow-[0_0_30px_rgba(0,255,156,0.3)] active:scale-[0.98]">
+            <div className="absolute inset-0 bg-[linear-gradient(90deg,transparent,rgba(255,255,255,0.4),transparent)] -translate-x-full group-hover:animate-[slideRight_1.5s_ease-in-out_infinite]" />
+            <Shield className="w-4 h-4 relative z-10" />
+            <span className="font-oxanium font-bold tracking-[2px] text-xs uppercase relative z-10">Descriptografar Acesso</span>
+            <ChevronRight className="w-4 h-4 relative z-10 group-hover:translate-x-1 transition-transform" />
+          </button>
+          
+          <button type="button" onClick={() => signIn('google', { callbackUrl: '/' })} className="w-full py-4 rounded-xl bg-[rgba(255,255,255,0.03)] border border-[rgba(255,255,255,0.1)] text-[var(--gris-text-1)] flex items-center justify-center gap-3 hover:bg-[rgba(255,255,255,0.08)] transition-all">
+             <svg viewBox="0 0 24 24" className="w-4 h-4" xmlns="http://www.w3.org/2000/svg"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
+            <span className="font-inter font-medium text-[13px]">Autenticar com Google</span>
+          </button>
+        </form>
+
+        <div className="mt-8 text-center border-t border-[rgba(255,255,255,0.05)] pt-6">
+          <p className="text-[11px] text-[var(--gris-text-3)] font-inter">
+            Monitorado por IA. <a href="/cadastro" className="text-[var(--gris-text-2)] hover:text-[var(--gris-primary)] underline decoration-dotted transition-colors">Solicitar credencial</a>
+          </p>
         </div>
       </div>
     </div>
